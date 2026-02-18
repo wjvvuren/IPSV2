@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "angular.ng-template",
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.csdevkit",
+    "johnpapa.vscode-peacock",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint"
+  ]
+}

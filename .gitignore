@@ -1,0 +1,25 @@
+# Build results
+**/bin/
+**/obj/
+
+# .NET
+*.user
+*.suo
+*.cache
+*.vs/
+
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# IDE
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Environment
+.env
+*.local

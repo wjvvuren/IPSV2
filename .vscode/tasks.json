@@ -1,0 +1,103 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "backend: start api",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["watch", "run"],
+      "options": {
+        "cwd": "${workspaceFolder}/backend-dotnet/IpsApi"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+    {
+      "label": "backend: start api (no watch)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["run"],
+      "options": {
+        "cwd": "${workspaceFolder}/backend-dotnet/IpsApi"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+    {
+      "label": "frontend: start angular",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "start"],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+    {
+      "label": "kill: all servers",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Get-Process -Name dotnet -ErrorAction SilentlyContinue | Stop-Process -Force; Get-Process -Name node -ErrorAction SilentlyContinue | Where-Object { -not $_.MainWindowTitle } | Stop-Process -Force; Write-Host 'All servers stopped.'"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "close": true
+      }
+    },
+    {
+      "label": "restart: full stack",
+      "dependsOn": [
+        "kill: all servers",
+        "backend: start api",
+        "frontend: start angular"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "build: dotnet",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["build"],
+      "options": {
+        "cwd": "${workspaceFolder}/backend-dotnet/IpsApi"
+      },
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "build: angular",
+      "type": "shell",
+      "command": "npx",
+      "args": ["ng", "build"],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "problemMatcher": [],
+      "group": "build"
+    }
+  ]
+}

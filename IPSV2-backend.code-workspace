@@ -1,0 +1,33 @@
+{
+  "folders": [
+    {
+      "path": "backend-dotnet"
+    }
+  ],
+  "settings": {
+    "peacock.color": "#00a86b",
+    "peacock.affectActivityBar": true,
+    "peacock.affectStatusBar": true,
+    "peacock.affectTitleBar": true,
+    "peacock.affectSideBar": true,
+    "workbench.colorCustomizations": {
+      "activityBar.activeBackground": "#33bb88",
+      "activityBar.background": "#33bb88",
+      "activityBar.foreground": "#15202b",
+      "activityBar.inactiveForeground": "#15202b99",
+      "activityBarBadge.background": "#6b0087",
+      "activityBarBadge.foreground": "#e7e7e7",
+      "commandCenter.border": "#e7e7e799",
+      "sash.hoverBorder": "#33bb88",
+      "statusBar.background": "#00a86b",
+      "statusBar.foreground": "#e7e7e7",
+      "statusBarItem.hoverBackground": "#33bb88",
+      "statusBarItem.remoteBackground": "#00a86b",
+      "statusBarItem.remoteForeground": "#e7e7e7",
+      "titleBar.activeBackground": "#00a86b",
+      "titleBar.activeForeground": "#e7e7e7",
+      "titleBar.inactiveBackground": "#00a86b99",
+      "titleBar.inactiveForeground": "#e7e7e799"
+    }
+  }
+}

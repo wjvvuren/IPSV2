@@ -1,0 +1,55 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: .NET",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "dotnet watch run",
+      "cwd": "${workspaceFolder}/backend-dotnet/IpsApi"
+    },
+    {
+      "name": "Backend: .NET (no watch)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "dotnet run",
+      "cwd": "${workspaceFolder}/backend-dotnet/IpsApi"
+    },
+    {
+      "name": "Frontend: Angular",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run start",
+      "cwd": "${workspaceFolder}/frontend"
+    },
+    {
+      "name": "Chrome: Frontend",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/frontend/src",
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*"
+      }
+    },
+    {
+      "name": "Chrome: Backend (Swagger)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5224/swagger",
+      "webRoot": "${workspaceFolder}/backend-dotnet/IpsApi"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack (Backend + Frontend)",
+      "configurations": ["Backend: .NET", "Frontend: Angular"],
+      "stopAll": true
+    },
+    {
+      "name": "Full Stack + Chrome",
+      "configurations": ["Backend: .NET", "Frontend: Angular", "Chrome: Frontend"],
+      "stopAll": true
+    }
+  ]
+}
