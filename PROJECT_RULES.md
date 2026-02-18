@@ -262,24 +262,28 @@ interface Validation {
 
 ## 8. API Service Rules
 
-### Central API Service
-ALL HTTP calls go through `ApiService`. No component or feature service calls `HttpClient` directly.
+### Thin Base Service (`ApiService`)
+The app provides a lightweight `ApiService` that exposes the base URL and generic HTTP helpers. Components and feature services MAY use `HttpClient` directly — there is no requirement to wrap every call in a named `ApiService` method.
+
+**Why:** This app is heavily dynamic (runtime URLs built from `FormID`, `ObjTypeNo`, etc.). Forcing every call through a single wrapper creates a bloated file and adds pass-through boilerplate. Cross-cutting concerns (auth, logging) are already handled by **interceptors**.
 
 ```typescript
-// Correct
-this.apiService.get<T>(endpoint, params);
-this.apiService.post<T>(endpoint, body);
+// Option A — Use ApiService helpers (preferred for common endpoints)
+this.apiService.get<T>('/records/stakeholders');
+this.apiService.post<T>('/storedproc/execute', body);
 
-// WRONG — never do this
-this.http.get<T>(url);
+// Option B — Use HttpClient directly (fine for dynamic/one-off calls)
+const url = `${environment.apiUrl}/dynamic/${formId}`;
+this.http.get<T>(url, { params });
 ```
 
-### Every API call MUST:
-1. Go through `ApiService`
-2. Be logged by `ApiLoggerService`
-3. Be documented in the API Contract
-4. Handle errors via a centralized error handler
-5. Show loading state in the UI
+### Both approaches are valid. The rules are:
+1. **Always use `environment.apiUrl`** as the base — never hardcode `localhost:8003`
+2. **Never duplicate interceptor logic** (auth headers, error toasts) inside a component
+3. All calls are automatically logged by `devModeInterceptor` — no manual logging needed
+4. Be documented in the API Contract
+5. Handle errors via the centralized interceptor (components only handle business-level errors)
+6. Show loading state in the UI
 
 ---
 
@@ -362,7 +366,7 @@ Before ANY code change, verify:
 - [ ] Component is standalone
 - [ ] Component is generic/reusable
 - [ ] No data manipulation in Angular
-- [ ] API call goes through `ApiService`
+- [ ] API call uses `environment.apiUrl` (never hardcoded URLs)
 - [ ] API call is documented in contract
 - [ ] Dev Panel will show this call
 - [ ] No hardcoded URLs or config values
