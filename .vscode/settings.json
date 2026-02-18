@@ -1,4 +1,5 @@
 {
+  "chat.instructionsFilesPattern": "PROJECT_RULES.md",
   "peacock.color": "#e44d2a",
   "peacock.affectActivityBar": true,
   "peacock.affectStatusBar": true,
