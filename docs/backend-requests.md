@@ -54,11 +54,34 @@ No parameters needed.
 ### Why
 The ERM sidebar forms are currently hardcoded. If forms are added/removed/renamed in the database, the frontend won't reflect those changes. A procedure ensures the navigation stays in sync with the database configuration.
 
+### Example Procedure (for reference)
+```sql
+DELIMITER $$
+
+CREATE PROCEDURE `ReadERMForms`()
+BEGIN
+    SELECT
+        form.ObjNo   AS FormID,
+        nav.ObjCode  AS Code,
+        nav.ObjDescr AS Name,
+        nav.Seq      AS Seq
+    FROM obj nav
+    INNER JOIN obj form
+        ON form.ObjCode = nav.ObjCode
+        AND form.ObjTypeNo = 826
+    WHERE nav.HiLev = 3003721
+    ORDER BY nav.Seq;
+END$$
+
+DELIMITER ;
+```
+
 ### Notes
 - Parent navigation object: `ObjNo = 3003721` ("Files ERM", `ObjTypeNo = 153`)
 - Child items found via `HiLev = 3003721` in `obj` table (26 rows)
 - FormIDs found by matching child `ObjCode` to `obj` rows with `ObjTypeNo = 826`
 - Some forms may not have data yet (e.g., Product, Business Process return 0 rows from `ReadNewERM`)
+- The example above is just a suggestion — adjust joins/columns as needed
 
 ---
 
