@@ -1,0 +1,39 @@
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Navigation</span>
+  </div>
+  <ul class="nav-list">
+    <li>
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+    </li>
+
+    <li class="nav-section">
+      <button class="nav-section-toggle" (click)="toggleErm()">
+        <span class="nav-icon">🏗️</span>
+        <span class="nav-label">ERM</span>
+        <span class="toggle-arrow" [class.expanded]="ermExpanded()">▸</span>
+      </button>
+
+      @if (ermExpanded()) {
+        <ul class="nav-sub-list">
+          @for (form of ermForms(); track form.id) {
+            <li>
+              <a
+                [routerLink]="['/erm', form.id]"
+                routerLinkActive="active"
+                class="nav-item sub-item"
+              >
+                <span class="nav-icon">{{ form.icon }}</span>
+                <span class="nav-label">{{ form.name }}</span>
+                <span class="nav-id">({{ form.id }})</span>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    </li>
+  </ul>
+</nav>

@@ -66,6 +66,61 @@ None
 
 ---
 
+## ERM — Read
+
+| Field | Value |
+|-------|-------|
+| **Endpoint** | `GET /api/erm` |
+| **Method** | GET |
+| **Stored Procedure** | `ReadNewERM(FormID, ObjTypeList, RequiredDate)` |
+| **Status** | 🔨 In Progress |
+
+### Request Parameters (Query String)
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `formId` | int | Yes | — | The form configuration ID from the `obj` table |
+| `objTypeList` | string | No | `""` | Comma-separated ObjTypeNo values to filter |
+| `requiredDate` | string (date) | No | `null` | ISO date string for date filtering |
+
+### Example Request
+```
+GET /api/erm?formId=3002971
+GET /api/erm?formId=3002971&objTypeList=10563&requiredDate=2026-01-01
+```
+
+### Expected Response
+```json
+{
+  "success": true,
+  "data": {
+    "columns": ["No", "Function", "Description", "Roles", "Seq", "Duration", "Man Hrs"],
+    "rows": [
+      {
+        "No": "2300036",
+        "Function": "Access Management",
+        "Description": "Access Management",
+        "Roles": "COO",
+        "Seq": "100033.000",
+        "Duration": "0.000",
+        "Man Hrs": "0.000"
+      }
+    ],
+    "totalRows": 75,
+    "formId": 3002971,
+    "procedureName": "ReadNewERM"
+  },
+  "error": null,
+  "timestamp": "2026-02-18T10:30:00Z"
+}
+```
+
+### Notes
+- Column names are dynamic — they change based on the form configuration in the `obj` table.
+- The backend returns data as-is from the procedure; Angular renders the dynamic columns.
+- Test form: `3002971` (Company Functions, 75 rows).
+
+---
+
 <!-- TEMPLATE — Copy this block for each new endpoint:
 
 ## [Feature] — [Action]

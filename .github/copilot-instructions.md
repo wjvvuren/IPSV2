@@ -1,8 +1,13 @@
 # Copilot Instructions
 
-**Before doing anything, you MUST read and follow the rules in [PROJECT_RULES.md](../PROJECT_RULES.md).**
+**Before doing anything, you MUST read and follow the rules in these files:**
 
-That file is the single source of truth for this project's architecture, conventions, and constraints. If anything conflicts, PROJECT_RULES.md wins.
+1. **[PROJECT_RULES.md](../PROJECT_RULES.md)** — Architecture, conventions, and constraints.
+2. **[GETTING_STARTED.md](../GETTING_STARTED.md)** — Environment setup, database access, project structure.
+3. **[docs/api-contract.md](../docs/api-contract.md)** — All documented API endpoints.
+4. **[docs/backend-requests.md](../docs/backend-requests.md)** — Pending requests for the backend/SQL developer.
+
+These files are the single source of truth for this project. If anything conflicts, PROJECT_RULES.md wins.
 
 ## Key Reminders
 
@@ -14,3 +19,4 @@ That file is the single source of truth for this project's architecture, convent
 - **Never hardcode URLs, ports, or credentials.**
 - **The Dev Panel must show every API call.**
 - **Read `docs/api-contract.md` and `docs/backend-requests.md` before making changes.**
+- **Database:** MySQL at `192.168.36.35:3306`, database `Bank01`. Use the VS Code database plugin to browse procedures/tables. Angular NEVER talks to the database directly — all data flows through the .NET API calling stored procedures.

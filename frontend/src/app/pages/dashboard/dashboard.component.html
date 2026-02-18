@@ -1,0 +1,16 @@
+<div class="dashboard">
+  <h2>System Status</h2>
+  <div class="status-card">
+    <div class="status-row">
+      <span class="status-label">API Health:</span>
+      <span class="status-value" [class.healthy]="healthStatus() === 'healthy'" [class.error]="healthStatus() === 'unreachable'">
+        {{ healthStatus() }}
+      </span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">API Calls Logged:</span>
+      <span class="status-value">{{ apiCallCount() }}</span>
+    </div>
+    <button class="btn" (click)="checkHealth()">Re-check</button>
+  </div>
+</div>
