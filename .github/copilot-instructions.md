@@ -15,8 +15,18 @@ These files are the single source of truth for this project. If anything conflic
 - **All components must be standalone and generic/reusable.**
 - **All HTTP calls go through `ApiService`** — never use `HttpClient` directly.
 - **Every endpoint must be documented in `docs/api-contract.md` before use.**
-- **If the API returns wrong data, do NOT fix it in Angular** — document a request in `docs/backend-requests.md`.
+- **If the API returns wrong data, do NOT fix it in Angular** — document a request in `docs/backend-requests/`.
 - **Never hardcode URLs, ports, or credentials.**
 - **The Dev Panel must show every API call.**
 - **Read `docs/api-contract.md` and `docs/backend-requests.md` before making changes.**
 - **Database:** MySQL at `192.168.36.35:3306`, database `Bank01`. Use the VS Code database plugin to browse procedures/tables. Angular NEVER talks to the database directly — all data flows through the .NET API calling stored procedures.
+
+## Backend Requests
+
+When you need a new stored procedure, a change to an existing one, or an endpoint isn't returning what the UI needs:
+
+1. **Create a numbered file** in `docs/backend-requests/` using the naming convention `NNN-short-description.md` (e.g. `001-erm-form-list.md`, `002-pagination-support.md`).
+2. **Copy the template** from `docs/backend-requests/_template.md`.
+3. **Fill in all sections** — include an example SQL procedure when possible so the backend dev can see the intent.
+4. **Add a row** to the Request Index table in `docs/backend-requests.md`.
+5. **Never skip numbering** — always use the next sequential number.

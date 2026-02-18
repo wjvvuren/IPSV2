@@ -2,7 +2,8 @@
 
 > Use this file to communicate with the backend/SQL developer.
 >
-> Add entries here when you need a new stored procedure, a change to an existing one, or when an endpoint isn't returning what the UI needs.
+> Each request lives in its own numbered file under [`docs/backend-requests/`](backend-requests/).
+> Name files as `NNN-short-description.md` (e.g. `001-erm-form-list.md`).
 
 ---
 
@@ -17,106 +18,14 @@
 
 ---
 
-## Requests
+## Request Index
 
-*(Add new requests below)*
-
----
-
-## [Request]: Procedure to Fetch ERM Form List
-**Date:** 2026-02-18
-**Status:** 📋 Requested
-**Priority:** 🟡 Medium
-
-### What I Need
-A stored procedure that returns the list of ERM forms (name, FormID, icon/code) so the sidebar navigation can be built dynamically from the database instead of being hardcoded in the API.
-
-Currently, the ERM form list is hardcoded in `ErmController.cs` with 20 entries manually mapped to FormIDs. These were discovered by querying `obj` where `HiLev = 3003721` (parent "Files ERM") and cross-referencing with `ObjTypeNo = 826` forms. This mapping should come from a procedure.
-
-### Proposed Endpoint
-`GET /api/erm/forms`
-
-### Proposed Procedure Name
-`ReadERMForms`
-
-### Expected Request
-No parameters needed.
-
-### Expected Response
-```json
-[
-  { "id": 3002443, "name": "Stakeholder", "code": "Stakeholder" },
-  { "id": 3003751, "name": "Product", "code": "Product" },
-  { "id": 3004196, "name": "Business Process", "code": "BusinessProcess" }
-]
-```
-
-### Why
-The ERM sidebar forms are currently hardcoded. If forms are added/removed/renamed in the database, the frontend won't reflect those changes. A procedure ensures the navigation stays in sync with the database configuration.
-
-### Example Procedure (for reference)
-```sql
-DELIMITER $$
-
-CREATE PROCEDURE `ReadERMForms`()
-BEGIN
-    SELECT
-        form.ObjNo   AS FormID,
-        nav.ObjCode  AS Code,
-        nav.ObjDescr AS Name,
-        nav.Seq      AS Seq
-    FROM obj nav
-    INNER JOIN obj form
-        ON form.ObjCode = nav.ObjCode
-        AND form.ObjTypeNo = 826
-    WHERE nav.HiLev = 3003721
-    ORDER BY nav.Seq;
-END$$
-
-DELIMITER ;
-```
-
-### Notes
-- Parent navigation object: `ObjNo = 3003721` ("Files ERM", `ObjTypeNo = 153`)
-- Child items found via `HiLev = 3003721` in `obj` table (26 rows)
-- FormIDs found by matching child `ObjCode` to `obj` rows with `ObjTypeNo = 826`
-- Some forms may not have data yet (e.g., Product, Business Process return 0 rows from `ReadNewERM`)
-- The example above is just a suggestion — adjust joins/columns as needed
+| # | Request | Status | Priority | File |
+|---|---------|--------|----------|------|
+| ~~001~~ | ~~ERM Form List~~ | Merged into 003 | — | — |
+| 002 | ReadNewERM Fixes & Pagination | 📋 | 🔴 High | [002-readnewerm-fixes-pagination.md](backend-requests/002-readnewerm-fixes-pagination.md) |
+| 003 | Application Navigation + Children (incl. ERM) | 📋 | 🔴 High | [003-application-navigation.md](backend-requests/003-application-navigation.md) |
 
 ---
 
-<!-- TEMPLATE — Copy this block for each new request:
-
-## [Request/Fix]: [Short Description]
-**Date:** YYYY-MM-DD
-**Status:** 📋 Requested
-**Priority:** 🔴 High / 🟡 Medium / 🟢 Low
-
-### What I Need
-[Describe what you need]
-
-### Proposed Endpoint
-`METHOD /api/Controller/Action`
-
-### Proposed Procedure Name
-`sp_ProcedureName`
-
-### Expected Request
-```json
-{
-}
-```
-
-### Expected Response
-```json
-{
-}
-```
-
-### Why
-[Explain the UI/UX requirement driving this]
-
-### Notes
--
-
--->
+<!-- TEMPLATE — Copy `docs/backend-requests/_template.md` for each new request -->
