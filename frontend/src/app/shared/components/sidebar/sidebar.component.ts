@@ -1,14 +1,6 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { ApiService } from '../../../core/services/api.service';
-import { ApiResponse } from '../../../core/models/api-response.model';
-
-export interface ErmForm {
-  id: number;
-  name: string;
-  code: string;
-  icon: string;
-}
+import { NavigationService, NavModule, NavChild } from '../../../core/services/navigation.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,26 +10,50 @@ export interface ErmForm {
   styleUrl: './sidebar.component.scss'
 })
 export class SidebarComponent implements OnInit {
-  ermForms = signal<ErmForm[]>([]);
-  ermExpanded = signal<boolean>(true);
+  private navService = inject(NavigationService);
 
-  constructor(private apiService: ApiService) {}
+  /** Track which module sections are expanded (by ObjNo) */
+  expandedModules = signal<Set<string>>(new Set());
+
+  modules = this.navService.activeModules;
+  loaded = this.navService.loaded;
 
   ngOnInit(): void {
-    this.loadForms();
+    this.navService.loadNavigation();
   }
 
-  loadForms(): void {
-    this.apiService.get<ApiResponse<ErmForm[]>>('/api/erm/forms').subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.ermForms.set(response.data);
-        }
-      }
-    });
+  /** Get children for a module */
+  getChildren(moduleObjNo: string | number): NavChild[] {
+    return this.navService.getChildren(moduleObjNo);
   }
 
-  toggleErm(): void {
-    this.ermExpanded.set(!this.ermExpanded());
+  /** Check if a module section is expanded */
+  isExpanded(moduleObjNo: string | number): boolean {
+    return this.expandedModules().has(String(moduleObjNo));
+  }
+
+  /** Toggle a module section */
+  toggleModule(moduleObjNo: string | number): void {
+    const key = String(moduleObjNo);
+    const current = new Set(this.expandedModules());
+    if (current.has(key)) {
+      current.delete(key);
+    } else {
+      current.add(key);
+    }
+    this.expandedModules.set(current);
+  }
+
+  /** Get the route for a child nav item */
+  getChildRoute(child: NavChild): string[] {
+    if (child.FormID) {
+      return ['/form', String(child.FormID)];
+    }
+    return ['/module', String(child.ParentObjNo), String(child.ObjNo)];
+  }
+
+  /** Check if a child is an ERM item */
+  isErmChild(child: NavChild): boolean {
+    return child.FormID !== null;
   }
 }

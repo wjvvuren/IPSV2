@@ -83,4 +83,65 @@ public class DatabaseService
 
         return results;
     }
+
+    /// <summary>
+    /// Calls a stored procedure that returns multiple result sets.
+    /// Each result set is a list of dictionaries (rows with column names as keys).
+    /// Used by procedures like ReadNavigation that return 2+ result sets in one call.
+    /// </summary>
+    public async Task<List<List<Dictionary<string, object?>>>> CallProcedureMultiResultAsync(
+        string procedureName,
+        Dictionary<string, object?>? parameters = null)
+    {
+        await using var connection = await GetConnectionAsync();
+
+        var command = new MySqlCommand { Connection = connection };
+
+        if (parameters is null || parameters.Count == 0)
+        {
+            command.CommandText = $"CALL `{procedureName}`()";
+        }
+        else
+        {
+            var paramPlaceholders = new List<string>();
+            int idx = 0;
+            foreach (var param in parameters)
+            {
+                var paramName = $"@p{idx}";
+                paramPlaceholders.Add(paramName);
+
+                if (param.Value is null || param.Value == DBNull.Value)
+                {
+                    paramPlaceholders[idx] = "NULL";
+                }
+                else
+                {
+                    command.Parameters.AddWithValue(paramName, param.Value);
+                }
+                idx++;
+            }
+            command.CommandText = $"CALL `{procedureName}`({string.Join(", ", paramPlaceholders)})";
+        }
+
+        var allResultSets = new List<List<Dictionary<string, object?>>>();
+        await using var reader = await command.ExecuteReaderAsync();
+
+        do
+        {
+            var resultSet = new List<Dictionary<string, object?>>();
+            while (await reader.ReadAsync())
+            {
+                var row = new Dictionary<string, object?>();
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    var value = reader.GetValue(i);
+                    row[reader.GetName(i)] = value == DBNull.Value ? null : value;
+                }
+                resultSet.Add(row);
+            }
+            allResultSets.Add(resultSet);
+        } while (await reader.NextResultAsync());
+
+        return allResultSets;
+    }
 }

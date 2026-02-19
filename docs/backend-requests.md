@@ -23,8 +23,8 @@
 | # | Request | Status | Priority | File |
 |---|---------|--------|----------|------|
 | ~~001~~ | ~~ERM Form List~~ | Merged into 003 | — | — |
-| 002 | ReadNewERM Fixes & Pagination | 📋 | 🔴 High | [002-readnewerm-fixes-pagination.md](backend-requests/002-readnewerm-fixes-pagination.md) |
-| 003 | Application Navigation + Children (incl. ERM) | 📋 | 🔴 High | [003-application-navigation.md](backend-requests/003-application-navigation.md) |
+| 002 | ReadNewERM Fixes & Pagination | 📋 Requested — 5 forms crash, needs pagination | 🔴 High | [002-readnewerm-fixes-pagination.md](backend-requests/002-readnewerm-fixes-pagination.md) |
+| 003 | Application Navigation + Children (incl. ERM) | ⚠️ Created — FormID JOIN broken, workaround in Angular | 🔴 High | [003-application-navigation.md](backend-requests/003-application-navigation.md) |
 
 ---
 

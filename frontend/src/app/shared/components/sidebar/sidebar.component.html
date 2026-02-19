@@ -10,33 +10,44 @@
       </a>
     </li>
 
-    <li class="nav-section">
-      <button class="nav-section-toggle" (click)="toggleErm()">
-        <span class="nav-icon">🏗️</span>
-        <span class="nav-label">ERM</span>
-        <span class="toggle-arrow" [class.expanded]="ermExpanded()">▸</span>
-      </button>
+    @if (!loaded()) {
+      <li class="sidebar-loading">Loading…</li>
+    }
 
-      @if (ermExpanded()) {
-        <ul class="nav-sub-list">
-          <li class="sidebar-dev-note">
-            <span class="dev-note dev-note--dark">Req #003 — Forms hardcoded, waiting on ReadNavigation</span>
-          </li>
-          @for (form of ermForms(); track form.id) {
-            <li>
-              <a
-                [routerLink]="['/form', form.id]"
-                routerLinkActive="active"
-                class="nav-item sub-item"
-              >
-                <span class="nav-icon">{{ form.icon }}</span>
-                <span class="nav-label">{{ form.name }}</span>
-                <span class="nav-id">({{ form.id }})</span>
-              </a>
-            </li>
+    @for (mod of modules(); track mod.ObjNo) {
+      <li class="nav-section">
+        <button class="nav-section-toggle" (click)="toggleModule(mod.ObjNo)">
+          @if (mod.Icon) {
+            <i [class]="mod.Icon"></i>
+          } @else {
+            <span class="nav-icon">📁</span>
           }
-        </ul>
-      }
-    </li>
+          <span class="nav-label">{{ mod.Code }}</span>
+          <span class="toggle-arrow" [class.expanded]="isExpanded(mod.ObjNo)">▸</span>
+        </button>
+
+        @if (isExpanded(mod.ObjNo)) {
+          <ul class="nav-sub-list">
+            @for (child of getChildren(mod.ObjNo); track child.ObjNo) {
+              <li>
+                <a
+                  [routerLink]="getChildRoute(child)"
+                  routerLinkActive="active"
+                  class="nav-item sub-item"
+                >
+                  <span class="nav-label">{{ child.Code }}</span>
+                  @if (isErmChild(child)) {
+                    <span class="nav-id">({{ child.FormID }})</span>
+                  }
+                </a>
+              </li>
+            }
+            @if (getChildren(mod.ObjNo).length === 0) {
+              <li class="nav-empty">No sub-items</li>
+            }
+          </ul>
+        }
+      </li>
+    }
   </ul>
 </nav>

@@ -12,6 +12,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/form-view/form-view.component').then(m => m.FormViewComponent),
   },
+  {
+    path: 'module/:moduleId/:childId',
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
+  },
   // Legacy alias — keeps existing /erm/... URLs working
   {
     path: 'erm/:formId',

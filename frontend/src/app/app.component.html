@@ -3,18 +3,10 @@
     <h1>IPSV2</h1>
     <span class="env-badge">DEV</span>
 
-    <!-- Top navigation placeholder -->
-    <nav class="top-nav-placeholder">
-      <span class="top-nav-items">Home · Strategy · Planning · Stakeholders · Transactions · Reports · …</span>
-      <span class="dev-note">Backend Req #003 — Waiting on ReadNavigation procedure</span>
-    </nav>
+    <app-top-nav />
   </header>
 
-  <div class="app-body">
-    <app-sidebar />
-
-    <main class="app-content">
-      <router-outlet />
-    </main>
-  </div>
+  <main class="app-content">
+    <router-outlet />
+  </main>
 </div>

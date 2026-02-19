@@ -1,8 +1,10 @@
 # 002 — ReadNewERM Fixes & Pagination Support
 
 **Date:** 2026-02-18
-**Status:** 📋 Requested
+**Updated:** 2026-02-19
+**Status:** 📋 Requested — blocking 5 ERM forms
 **Priority:** 🔴 High
+**Assigned to:** Theo
 
 ---
 
@@ -166,3 +168,50 @@ DELIMITER ;
 - Working FormIDs that return 0 rows are fine — they execute successfully but just have no data yet.
 - Backward compatibility: if modifying `ReadNewERM`, making the new params optional with defaults ensures existing callers aren't broken.
 - Current call signature: `CALL ReadNewERM(FormID INT, ObjTypeList VARCHAR(255), RequiredDate DATE)`
+
+---
+
+## ⚠️ UPDATE — 2026-02-19: Stored Procedure Investigation Results
+
+### What we investigated
+
+We looked at three ERM-related stored procedures in the database to understand which is the correct one:
+
+| Procedure | Uses Level | Status |
+|---|---|---|
+| **ReadNewERM** | L4 | ✅ **This is the correct one** — works for 15/20 FormIDs |
+| **DynamicFieldValues** | L7 | ❌ Wrong — newest but buggy, returns wrong data structures |
+| **ReadERM** | L7 | ❌ Wrong — oldest version, also uses L7 |
+
+### Key finding: L4 vs L7
+
+The ERM forms in the `obj` table have data at two "levels" — L4 and L7. The procedures that use **L4** (`ReadNewERM`) return correct column/row structures. The procedures that use **L7** (`DynamicFieldValues`, `ReadERM`) return mismatched or broken results.
+
+**Theo — do NOT switch to DynamicFieldValues.** Stick with `ReadNewERM` (L4). It just needs the NULL fix for the 5 failing FormIDs.
+
+### Current workarounds in Angular
+
+The frontend has two dev-note sets tracking this:
+
+1. **`failingFormIds`** — The 5 FormIDs that crash with 500 error. These show a red "Known Issue" badge when opened.
+2. **`emptyFormIds`** — 14 FormIDs that return 0 rows. These work fine but show "No data found." These are likely not populated in the test database.
+3. **Client-side pagination** — Since there's no server-side pagination yet, the frontend slices all rows in memory. Works for now but won't scale when forms have 10k+ rows.
+
+### What the frontend shows today
+
+| FormID | Name | Status in UI |
+|---|---|---|
+| 3002443 | Stakeholder | ✅ Works — 10,986 rows, client-paginated |
+| 3000743 | Account | ✅ Works — 10,979 rows, client-paginated |
+| 3003751 | Product | ✅ Works — 0 rows |
+| 3004196 | Business Process | ✅ Works — 0 rows |
+| 3000825 | Resource | ❌ Red badge — 500 error |
+| 3000275 | (Stakeholder variant) | ❌ Red badge — 500 error |
+| 3000152 | Bank Transaction | ❌ Red badge — 500 error |
+| 3000214 | Journals | ❌ Red badge — 500 error |
+| 3000908 | Equipment | ❌ Red badge — 500 error |
+
+### Priority actions for Theo
+
+1. **Fix the NULL dynamic SQL bug** in `ReadNewERM` for the 5 failing FormIDs — this is the #1 blocker
+2. **Add pagination** (LIMIT/OFFSET + total count) — nice to have now, essential before go-live

@@ -1,0 +1,46 @@
+<nav class="top-nav" (mouseleave)="clearActiveModule()">
+  @if (!loaded()) {
+    <span class="top-nav-loading">Loading…</span>
+  }
+
+  <!-- Dev info: API source -->
+  <span class="dev-tag" title="GET /api/navigation → ReadNavigation()">📡 ReadNavigation</span>
+
+  @for (mod of modules(); track mod.ObjNo) {
+    <div
+      class="top-nav-module"
+      (mouseenter)="onModuleHover(mod)"
+    >
+      <span class="module-label">
+        {{ mod.Code }}
+        <span class="dev-id">{{ mod.ObjNo }}</span>
+      </span>
+
+      <!-- Dropdown: children of the hovered module -->
+      @if (activeModule()?.ObjNo === mod.ObjNo && activeChildren().length > 0) {
+        <div class="dropdown" (mouseleave)="clearActiveModule()">
+          <div class="dropdown-header">
+            <span class="dropdown-title">{{ activeModule()?.Code }}</span>
+            <span class="dev-id">ObjNo: {{ activeModule()?.ObjNo }}</span>
+          </div>
+          @for (child of activeChildren(); track child.ObjNo) {
+            <a
+              class="dropdown-item"
+              [routerLink]="getChildRoute(child)"
+              routerLinkActive="active"
+              (click)="clearActiveModule()"
+            >
+              <span class="child-name">{{ child.Code }}</span>
+              <span class="child-ids">
+                @if (isErmItem(child)) {
+                  <span class="erm-badge">FormID: {{ child.FormID }}</span>
+                }
+                <span class="dev-id">{{ child.ObjNo }}</span>
+              </span>
+            </a>
+          }
+        </div>
+      }
+    </div>
+  }
+</nav>

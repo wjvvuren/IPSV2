@@ -11,30 +11,16 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1.5rem;
   background: #e44d2a;
   color: #fff;
   flex-shrink: 0;
-  flex-wrap: wrap;
 
   h1 {
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
   }
-}
-
-.top-nav-placeholder {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-left: auto;
-}
-
-.top-nav-items {
-  font-size: 0.75rem;
-  opacity: 0.55;
-  font-style: italic;
 }
 
 .env-badge {
@@ -45,12 +31,6 @@
   background: rgba(255, 255, 255, 0.25);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-}
-
-.app-body {
-  display: flex;
-  flex: 1;
-  min-height: 0;
 }
 
 .app-content {

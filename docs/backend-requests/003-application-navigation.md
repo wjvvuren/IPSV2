@@ -1,7 +1,7 @@
 # 003 — Procedure for Application Navigation / Module Menu (with children)
 
 **Date:** 2026-02-18
-**Status:** 📋 Requested
+**Status:** ⚠️ Created — needs FormID fix from Theo
 **Priority:** 🔴 High
 **Assigned to:** Theo
 
@@ -253,3 +253,57 @@ DELIMITER ;
 - The ERM module (`ObjNo = 3003721`) has 26 nav items. The FormID mapping works via `ObjCode` match to `ObjTypeNo = 826` rows.
 - **This procedure replaces the need for a separate `ReadERMForms` procedure** — everything comes through in one call.
 - Thanks Theo! Let us know if you have questions. 🙏
+
+---
+
+## ⚠️ UPDATE — 2026-02-19: Procedure Created, but FormID mapping is WRONG
+
+### What was done
+
+The `ReadNavigation` procedure has been **created in the database** using the example SQL above. It works and returns data. The .NET API endpoint `GET /api/navigation` is live and the Angular frontend now renders the **top navbar** dynamically from database data. *(Sidebar was removed — the app uses a single top nav bar with dropdown menus.)*
+
+### What works
+- ✅ **Result Set 1 (modules)** — All 23 top-level modules return correctly with Code, Name, Description, Icon, SortOrder, StatusNo, IsActive
+- ✅ **Result Set 2 (children)** — All regular module children return correctly with ParentObjNo for grouping
+- ✅ **Sorting** — Both modules and children sort correctly by ObjQty3
+- ✅ **Active/Inactive filtering** — Frontend filters `IsActive = 0` modules from the nav
+
+### What is BROKEN — ERM FormID mapping
+
+The `LEFT JOIN` that maps ERM children to their FormID is **producing wrong results**:
+
+| ERM Child Code | Expected FormID | What the JOIN Returns | Problem |
+|---|---|---|---|
+| Stakeholder | 3002443 | 803, 3003755 | **Wrong values + duplicate row** |
+| Resource | 3000825 | 11, 3003753 | **Wrong values + duplicate row** |
+| Documents | 3001488 | 654, 3003742 | **Wrong values + duplicate row** |
+| Account | 3000743 | 2082 | **Wrong value** |
+| Journals | 3000214 | 3052, 100624, 3003747 | **Wrong values + 3 duplicate rows** |
+| Equipment | 3000908 | 28, 3003743 | **Wrong values + duplicate row** |
+| Business Process | 3004196 | NULL | **Missing** |
+| Look-ups | 3001603 | NULL | **Missing** |
+| Share Register | 3003754 | NULL | **Missing** |
+| Related Party | 3003752 | NULL | **Missing** |
+
+**Root cause:** The JOIN `form.ObjCode = child.ObjCode AND form.ObjTypeNo = 826` matches **multiple rows** because several `ObjTypeNo = 826` records share the same `ObjCode`. The correct FormIDs (3002443 for Stakeholder, 3000743 for Account, etc.) come from a different mapping — not just a simple ObjCode match.
+
+### What the frontend does as a workaround
+
+The Angular `NavigationService` currently has a **hardcoded FormID override map** to use the correct values until this is fixed:
+
+```typescript
+private readonly FORM_ID_OVERRIDES: Record<string, number> = {
+  'Stakeholder': 3002443,
+  'Account': 3000743,
+  'Product': 3003751,
+  // ... etc
+};
+```
+
+### Theo: What we need
+
+1. **Fix the FormID JOIN** in `ReadNavigation` so each ERM child returns exactly **one row** with the **correct FormID**
+2. The correct FormIDs are the ones we've been using successfully with `ReadNewERM` — they are the `ObjNo` values from `obj` where the ERM form definition lives
+3. Once fixed, we can remove the hardcoded override map from the frontend
+
+**Hint:** The ERM nav items (HiLev=3003721) might be linked to their FormID through a relationship table or a specific ObjTypeNo that we haven't found yet. The current simple `ObjCode` match to `ObjTypeNo = 826` is not the right approach — it produces multiple matches and wrong values.

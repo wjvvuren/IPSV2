@@ -121,6 +121,71 @@ GET /api/erm?formId=3002971&objTypeList=10563&requiredDate=2026-01-01
 
 ---
 
+## Navigation — Full Tree
+
+| Field | Value |
+|-------|-------|
+| **Endpoint** | `GET /api/navigation` |
+| **Method** | GET |
+| **Stored Procedure** | `ReadNavigation()` |
+| **Status** | ⚠️ Working but ERM FormID mapping needs fix (see backend req #003) |
+
+### Request Parameters
+None
+
+### Expected Response
+```json
+{
+  "success": true,
+  "data": {
+    "modules": [
+      {
+        "ObjNo": "3002338",
+        "Code": "Strategy",
+        "Name": "Strategy",
+        "Description": "Strategy Management",
+        "Icon": "fa fa-cubes",
+        "SortOrder": "100.000",
+        "StatusNo": "17",
+        "IsActive": "1"
+      }
+    ],
+    "children": [
+      {
+        "ObjNo": "3000270",
+        "Code": "All Stakeholders",
+        "Name": "All Stakeholders",
+        "ParentObjNo": "3000269",
+        "ObjTypeNo": "2139",
+        "SortOrder": "10.000",
+        "StatusNo": "17",
+        "FormID": null
+      },
+      {
+        "ObjNo": "3004191",
+        "Code": "Stakeholder",
+        "Name": "ERM",
+        "ParentObjNo": "3003721",
+        "ObjTypeNo": "2139",
+        "SortOrder": "100.000",
+        "StatusNo": "17",
+        "FormID": "803"
+      }
+    ]
+  },
+  "error": null,
+  "timestamp": "2026-02-19T10:00:00Z"
+}
+```
+
+### Notes
+- Returns **two result sets** from one procedure call: modules (top-level nav) and children (sub-items).
+- `modules` are sorted by `SortOrder` (ObjQty3). Inactive modules have `IsActive = 0` / `StatusNo = 16`.
+- `children` include a `ParentObjNo` to group under the correct module.
+- `FormID` is only populated for **ERM children** (`ParentObjNo = 3003721`). ⚠️ **Currently buggy** — the FormID mapping via `ObjCode + ObjTypeNo=826` produces wrong values and duplicate rows. See backend request #003 for details. The frontend uses hardcoded FormIDs until Theo fixes this.
+
+---
+
 <!-- TEMPLATE — Copy this block for each new endpoint:
 
 ## [Feature] — [Action]

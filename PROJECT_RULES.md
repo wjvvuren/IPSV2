@@ -386,5 +386,44 @@ Before ANY code change, verify:
 
 ---
 
-*Last updated: 2026-02-18*
+*Last updated: 2026-02-19*
 *If this file conflicts with any other documentation, THIS FILE WINS.*
+
+---
+
+## 14. Current Project Status
+
+> **Last updated: 2026-02-19**
+
+### What's Working
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| .NET API server | ✅ Running | Port 8003, Scalar docs at `/scalar` |
+| Angular frontend | ✅ Running | Port 4200, standalone components, signals |
+| Health endpoint | ✅ | `GET /api/health` |
+| Navigation from DB | ✅ Working (with workaround) | `GET /api/navigation` → calls `ReadNavigation` |
+| Top nav bar | ✅ | Modules with hover dropdowns, dev IDs visible |
+| ERM form viewer | ✅ For 15/20 forms | `GET /api/erm?formId=X` → calls `ReadNewERM` |
+| Data grid | ✅ | Generic, stateless, client-side pagination |
+| Dynamic routes | ✅ | `/form/:formId` → single `FormViewComponent` |
+| Dev Panel logging | ✅ | All API calls intercepted and logged |
+
+### What's Blocked on Backend (Theo)
+
+| Issue | Backend Request | Impact | Workaround in place? |
+|-------|----------------|--------|---------------------|
+| **5 ERM forms crash (500)** | [002](docs/backend-requests/002-readnewerm-fixes-pagination.md) | Resource, Bank Transaction, Journals, Equipment, Stakeholder variant unusable | ❌ No — shows error badge |
+| **ReadNavigation FormID JOIN wrong** | [003](docs/backend-requests/003-application-navigation.md) | ERM children get wrong/duplicate FormIDs from the DB | ✅ Yes — hardcoded `FORM_ID_OVERRIDES` map in `NavigationService` |
+| **No server-side pagination** | [002](docs/backend-requests/002-readnewerm-fixes-pagination.md) | Stakeholder (10k rows), Account (10k rows) load entirely into memory | ✅ Yes — client-side slicing |
+
+### TODO Tags in Code
+
+All pending backend-dependent work is marked with searchable tags:
+
+| Tag | Meaning | Files |
+|-----|---------|-------|
+| `TODO(backend-002)` | Blocked on ReadNewERM fixes & pagination | `ErmController.cs`, `form-view.component.ts` |
+| `TODO(backend-003)` | Blocked on ReadNavigation FormID fix | `NavigationController.cs`, `navigation.service.ts` |
+
+Search for `TODO(backend-` across the codebase to find all pending items.

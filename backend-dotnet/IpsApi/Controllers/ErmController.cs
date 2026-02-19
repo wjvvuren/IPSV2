@@ -11,34 +11,6 @@ public class ErmController : ControllerBase
     private readonly DatabaseService _db;
     private readonly ILogger<ErmController> _logger;
 
-    /// <summary>
-    /// Static ERM form definitions — maps menu items to FormIDs for ReadNewERM.
-    /// FormIDs are ObjNo values from the obj table (ObjTypeNo=826).
-    /// </summary>
-    private static readonly List<object> ErmForms =
-    [
-        new { id = 3002443, name = "Stakeholder", code = "Stakeholder", icon = "👥" },
-        new { id = 3003751, name = "Product", code = "Product", icon = "📦" },
-        new { id = 3004196, name = "Business Process", code = "BusinessProcess", icon = "⚙️" },
-        new { id = 3000825, name = "Resource", code = "Resource", icon = "🔧" },
-        new { id = 3001603, name = "Look-ups", code = "LookUps", icon = "🔍" },
-        new { id = 3003754, name = "Share Register", code = "ShareRegister", icon = "📋" },
-        new { id = 3003752, name = "Related Party", code = "RelatedParty", icon = "🤝" },
-        new { id = 3000650, name = "Addresses", code = "Addresses", icon = "📍" },
-        new { id = 3001488, name = "Documents", code = "Documents", icon = "📄" },
-        new { id = 3000743, name = "Account", code = "Account", icon = "💳" },
-        new { id = 3003725, name = "Account Setup", code = "AccountSetUp", icon = "🔧" },
-        new { id = 3004095, name = "Specific Fees", code = "SpecificFees", icon = "💰" },
-        new { id = 3000152, name = "Bank Transaction", code = "BankTransaction", icon = "🏦" },
-        new { id = 3000214, name = "Journals", code = "Journals", icon = "📓" },
-        new { id = 3003744, name = "General Ledgers", code = "GeneralLedgers", icon = "📊" },
-        new { id = 3003756, name = "Sub-Product", code = "SubProduct", icon = "📦" },
-        new { id = 3004120, name = "Sub-Product Detail", code = "SubProductDetail", icon = "📋" },
-        new { id = 3003745, name = "Global Fees", code = "GlobalFees", icon = "🌐" },
-        new { id = 3000908, name = "Equipment", code = "Equipment", icon = "🖥️" },
-        new { id = 3001231, name = "Master Tasks", code = "MasterTasks", icon = "✅" },
-    ];
-
     public ErmController(DatabaseService db, ILogger<ErmController> logger)
     {
         _db = db;
@@ -46,17 +18,14 @@ public class ErmController : ControllerBase
     }
 
     /// <summary>
-    /// Returns the list of available ERM forms for the sidebar navigation.
-    /// </summary>
-    [HttpGet("forms")]
-    public IActionResult GetForms()
-    {
-        return Ok(ApiResponse<object>.Ok(ErmForms));
-    }
-
-    /// <summary>
     /// Calls ReadNewERM stored procedure and returns dynamic column data.
     /// </summary>
+    /// <remarks>
+    /// TODO(backend-002): 5 FormIDs (3000825, 3000275, 3000152, 3000214, 3000908) return 500
+    /// because ReadNewERM generates invalid dynamic SQL with bare NULL.
+    /// Also needs: server-side pagination (LIMIT/OFFSET + total count).
+    /// See docs/backend-requests/002-readnewerm-fixes-pagination.md
+    /// </remarks>
     [HttpGet]
     public async Task<IActionResult> GetErm(
         [FromQuery] int formId,

@@ -1,0 +1,152 @@
+.top-nav {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: auto;
+  position: relative;
+}
+
+.top-nav-loading {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.dev-tag {
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  margin-right: 0.5rem;
+  cursor: help;
+  letter-spacing: 0.02em;
+}
+
+.dev-id {
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.top-nav-module {
+  position: relative;
+  cursor: pointer;
+
+  &:hover > .module-label {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.module-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.25rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+  line-height: 1.2;
+
+  .dev-id {
+    font-size: 0.5rem;
+    opacity: 0.5;
+  }
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 280px;
+  max-height: 450px;
+  overflow-y: auto;
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+  padding: 0;
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  .dropdown-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .dev-id {
+    color: rgba(255, 255, 255, 0.35);
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.775rem;
+  color: #cdd6f4;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.12s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+
+  &.active {
+    color: #e44d2a;
+    font-weight: 600;
+  }
+}
+
+.child-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.child-ids {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+
+  .dev-id {
+    color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.erm-badge {
+  font-size: 0.55rem;
+  font-weight: 700;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  background: rgba(228, 77, 42, 0.25);
+  color: #e44d2a;
+  letter-spacing: 0.02em;
+  font-family: 'Consolas', 'Courier New', monospace;
+}

@@ -33,11 +33,15 @@ export class FormViewComponent implements OnInit {
   error = signal<string | null>(null);
   formId = signal<number>(0);
 
-  /** Dev-note: FormIDs known to return 500 — Backend Req #002 */
+  /**
+   * TODO(backend-002): REMOVE once Theo fixes ReadNewERM NULL dynamic SQL bug.
+   * These 5 FormIDs crash with 500 because the procedure generates invalid SQL with a bare NULL.
+   * See docs/backend-requests/002-readnewerm-fixes-pagination.md
+   */
   private readonly failingFormIds = new Set([3000825, 3000275, 3000152, 3000214, 3000908]);
   isKnownFailing = computed(() => this.failingFormIds.has(this.formId()));
 
-  /** Dev-note: FormIDs that currently return 0 rows — Backend Req #002 */
+  /** TODO(backend-002): REMOVE once data is populated — these FormIDs return 0 rows in test DB */
   private readonly emptyFormIds = new Set([
     3003751, 3004196, 3001603, 3003752, 3003754, 3000650,
     3001488, 3003725, 3004095, 3003744, 3003756, 3004120,
@@ -45,7 +49,8 @@ export class FormViewComponent implements OnInit {
   ]);
   isKnownEmpty = computed(() => this.emptyFormIds.has(this.formId()));
 
-  // ── Pagination (client-side until Backend Req #002 delivers server-side) ──
+  // TODO(backend-002): Switch to SERVER-SIDE pagination once Theo adds LIMIT/OFFSET + total count to ReadNewERM
+  // Currently loading ALL rows into memory and slicing client-side — won't scale for 10k+ rows
   currentPage = signal<number>(1);
   pageSize = signal<number>(50);
 
