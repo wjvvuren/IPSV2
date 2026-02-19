@@ -102,12 +102,68 @@ Any option works. The response must include the total row count so the frontend 
 ## Expected Request
 
 ```
+GET /api/form-data?formId=3002443&page=1&pageSize=50
+
+-- Procedure call:
 CALL ReadFormData(3002443, '', NULL, 1, 50);
 -- OR if keeping existing name:
 CALL ReadNewERM(3002443, '', NULL, 1, 50);
 ```
 
-## Expected Response
+## Desired JSON Response (REQUIRED)
+
+> **This is the contract.** The .NET API must return this exact shape so `FormViewComponent` and `DataGridComponent` can render it generically.
+
+```json
+{
+  "success": true,
+  "data": {
+    "meta": {
+      "title": "Stakeholder",
+      "columns": [
+        { "key": "No", "label": "No", "type": "text", "visible": true },
+        { "key": "Function", "label": "Function", "type": "text", "visible": true },
+        { "key": "Description", "label": "Description", "type": "text", "visible": true },
+        { "key": "Roles", "label": "Roles", "type": "text", "visible": true },
+        { "key": "Seq", "label": "Seq", "type": "number", "visible": true },
+        { "key": "Duration", "label": "Duration", "type": "number", "visible": true },
+        { "key": "ManHrs", "label": "Man Hrs", "type": "number", "visible": true }
+      ],
+      "pagination": {
+        "totalRows": 10986,
+        "page": 1,
+        "pageSize": 50
+      },
+      "actions": []
+    },
+    "rows": [
+      {
+        "No": "2300036",
+        "Function": "Access Management",
+        "Description": "Access Management",
+        "Roles": "COO",
+        "Seq": "100033.000",
+        "Duration": "0.000",
+        "ManHrs": "0.000"
+      }
+    ]
+  },
+  "error": null,
+  "timestamp": "2026-02-18T10:30:00Z"
+}
+```
+
+### How Angular Will Use This
+
+| Field | Angular Component | What It Does |
+|-------|------------------|-------------|
+| `meta.title` | `FormViewComponent` | Displays as the page heading |
+| `meta.columns` | `DataGridComponent` | Renders table headers dynamically; `type` determines which Pipe to apply (DatePipe, CurrencyPipe, etc.) |
+| `meta.pagination` | `DataGridComponent` | Shows "1-50 of 10,986" and enables page navigation |
+| `meta.actions` | `FormViewComponent` | Renders action buttons (Create, Edit, Delete) — empty array = read-only |
+| `rows` | `DataGridComponent` | Rendered as table rows, one column per `meta.columns` entry |
+
+## Legacy Expected Response (for reference)
 
 Two result sets (or a total count column):
 

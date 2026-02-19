@@ -52,6 +52,16 @@ IPSV2 is an Angular frontend application that communicates with a .NET API backe
 - If data needs transformation, filtering, calculation, or validation beyond basic UI validation — **that is the SQL developer's job**.
 - If you find yourself writing logic to reshape data: **STOP**. Document what you need in `docs/backend-requests.md` and advise the backend/SQL developer to change their procedure.
 
+#### Formatting Exception
+While Angular must not **change the value** of data (business logic), it **is responsible** for display formatting based on metadata column types.
+
+| | Example | Allowed? |
+|---|---|---|
+| ✅ Correct | API sends `2026-02-19T00:00:00`, Angular uses `DatePipe` to show "Feb 19, 2026" | Yes — display formatting |
+| ✅ Correct | API sends `1500.5`, Angular uses `CurrencyPipe` to show "R 1,500.50" | Yes — display formatting |
+| ❌ Incorrect | Angular calculates "Days Overdue" by subtracting the date from today | No — this is a calculated value; must be a column from SQL |
+| ❌ Incorrect | Angular filters, groups, or aggregates rows to derive new data | No — this is data manipulation; must be done in the procedure |
+
 ### 2.2 — Dynamic, Standalone Components Only
 - Every component MUST be a **standalone Angular component**.
 - Components MUST be **generic and reusable**. Build once, work for all.
@@ -70,6 +80,34 @@ IPSV2 is an Angular frontend application that communicates with a .NET API backe
   - What you currently receive
   - What you need instead
   - Why you need it
+
+### 2.6 — API Metadata Standard
+
+All endpoints feeding `FormViewComponent` must return a **standard wrapper structure** — not just a raw array. The backend must dictate the UI structure.
+
+```typescript
+interface ApiResponse<T> {
+  meta: {
+    title: string;              // Page title
+    columns: ColumnDef[];       // Column headers, visible flags, types (date/text/currency)
+    pagination: {
+      totalRows: number;
+      page: number;
+      pageSize: number;
+    };
+    actions: ActionDef[];       // Allowed buttons (e.g., "Create", "Delete")
+  };
+  data: T[];
+}
+```
+
+**Rules:**
+- The `meta.columns` array defines what columns to render and their display types (text, date, currency, etc.). Angular uses this to apply the correct `Pipe` (see Formatting Exception in 2.1).
+- The `meta.pagination` object tells the grid how many total rows exist and which page is currently loaded.
+- The `meta.actions` array tells the UI which CRUD buttons to show. The frontend never decides this — the backend controls it.
+- If an endpoint does not yet return this shape, **document a backend request** to migrate it.
+
+---
 
 ### 2.5 — Environment Configuration
 - API base URL and all environment-specific config lives in `src/environments/` (Angular) and `.env` / `appsettings.json` (backend).
@@ -301,9 +339,20 @@ this.http.get<T>(url, { params });
 
 ## 10. Backend Developer Communication
 
+### JSON-First Requests
+
+When creating backend requests, **priority must be given to the Desired JSON Response**. Provide a literal JSON example of what the Angular component needs to receive. This is more helpful to the backend developer than a rough SQL query suggestion.
+
+**Every backend request MUST include:**
+1. A **literal JSON example** of the desired response (copy-pasteable, realistic data)
+2. A description of **what the UI will do** with each field
+3. Which **Angular component** will consume it (e.g., `DataGridComponent`, `DetailGridComponent`)
+
+The example SQL procedure section is **optional and secondary** — the JSON response is the contract.
+
 ### When You Need a New Procedure
 
-Create an entry in `docs/backend-requests.md`:
+Create a numbered file in `docs/backend-requests/` using the template (`_template.md`):
 
 ```markdown
 ## Request: [Description]
@@ -316,30 +365,42 @@ Create an entry in `docs/backend-requests.md`:
 ### Proposed Endpoint
 `GET /api/[controller]/[action]`
 
-### Expected Request
-json { ... }
+### Desired JSON Response (REQUIRED)
+json
+{
+  "meta": {
+    "title": "Stakeholders",
+    "columns": [
+      { "key": "No", "label": "No", "type": "text", "visible": true },
+      { "key": "Name", "label": "Full Name", "type": "text", "visible": true },
+      { "key": "CreatedDate", "label": "Created", "type": "date", "visible": true }
+    ],
+    "pagination": { "totalRows": 10986, "page": 1, "pageSize": 50 },
+    "actions": ["create", "edit", "delete"]
+  },
+  "data": [
+    { "No": "2300036", "Name": "John Doe", "CreatedDate": "2026-01-15T00:00:00" }
+  ]
+}
 
-### Expected Response
-json { ... }
+### Why
+[Explain the UI/UX requirement driving this]
 
-### Notes
-[Any additional context]
+### Example Procedure (optional, for reference)
+sql
+-- Optional: provide a rough SQL example so the backend dev understands the intent
 ```
 
 ### When a Procedure Returns Wrong Data
 
-Do NOT fix it in Angular. Add to `docs/backend-requests.md`:
+Do NOT fix it in Angular. Create a backend request showing:
 
 ```markdown
-## Fix Request: [Procedure Name]
-**Date:** YYYY-MM-DD
-**Status:** 📋 Requested
+### Current JSON Response
+json { what it currently returns — paste actual response from Dev Panel }
 
-### Current Response
-json { what it currently returns }
-
-### What I Need Instead
-json { what I need it to return }
+### Desired JSON Response
+json { what I need it to return — literal example }
 
 ### Why
 [Explain the UI requirement]

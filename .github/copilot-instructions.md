@@ -12,6 +12,7 @@ These files are the single source of truth for this project. If anything conflic
 ## Key Reminders
 
 - **No data manipulation in Angular** — Angular only displays and sends data.
+- **Formatting is allowed** — Angular MAY use `DatePipe`, `CurrencyPipe`, etc. to format display values based on column `type`. It must NOT calculate, filter, or aggregate data.
 - **All components must be standalone and generic/reusable.**
 - **All HTTP calls go through `ApiService`** — never use `HttpClient` directly.
 - **Every endpoint must be documented in `docs/api-contract.md` before use.**
@@ -19,6 +20,8 @@ These files are the single source of truth for this project. If anything conflic
 - **Never hardcode URLs, ports, or credentials.**
 - **The Dev Panel must show every API call.**
 - **Read `docs/api-contract.md` and `docs/backend-requests.md` before making changes.**
+- **API Metadata Standard** — All endpoints feeding `FormViewComponent` must return `{ meta: { title, columns, pagination, actions }, data: [] }`. See `PROJECT_RULES.md` Section 2.6.
+- **JSON-First Backend Requests** — Every backend request must include a **Desired JSON Response** with literal, copy-pasteable JSON. SQL examples are optional. See `PROJECT_RULES.md` Section 10.
 - **Database:** MySQL at `192.168.36.35:3306`, database `Bank01`. Use the VS Code database plugin to browse procedures/tables. Angular NEVER talks to the database directly — all data flows through the .NET API calling stored procedures.
 
 ## Dynamic Standalone Components — CRITICAL
@@ -66,6 +69,8 @@ When you need a new stored procedure, a change to an existing one, or an endpoin
 
 1. **Create a numbered file** in `docs/backend-requests/` using the naming convention `NNN-short-description.md` (e.g. `001-erm-form-list.md`, `002-pagination-support.md`).
 2. **Copy the template** from `docs/backend-requests/_template.md`.
-3. **Fill in all sections** — include an example SQL procedure when possible so the backend dev can see the intent.
-4. **Add a row** to the Request Index table in `docs/backend-requests.md`.
-5. **Never skip numbering** — always use the next sequential number.
+3. **Fill in all sections** — the **Desired JSON Response** section is REQUIRED. Include a literal, copy-pasteable JSON example of what Angular needs to receive.
+4. **Add a "How Angular Will Use This" table** explaining which component consumes each field.
+5. **SQL examples are optional** — the JSON response is the real contract.
+6. **Add a row** to the Request Index table in `docs/backend-requests.md`.
+7. **Never skip numbering** — always use the next sequential number.

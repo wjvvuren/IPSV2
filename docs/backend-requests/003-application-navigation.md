@@ -136,7 +136,84 @@ CALL ReadNavigation();
 
 No parameters needed — it should return the entire tree in one call.
 
-## Expected Response
+## Desired JSON Response (REQUIRED)
+
+> **This is the contract.** The .NET API must return this exact shape so `NavigationService` can build the top nav bar dynamically.
+
+```json
+{
+  "success": true,
+  "data": {
+    "modules": [
+      {
+        "ObjNo": "3002338",
+        "Code": "Strategy",
+        "Name": "Strategy",
+        "Description": "Strategy Management",
+        "Icon": "fa fa-cubes",
+        "SortOrder": "100.000",
+        "StatusNo": "17",
+        "IsActive": "1"
+      },
+      {
+        "ObjNo": "3000269",
+        "Code": "Stakeholders",
+        "Name": "Stakeholders",
+        "Description": "Stakeholder Management",
+        "Icon": "fa-solid fa-list",
+        "SortOrder": "200.000",
+        "StatusNo": "17",
+        "IsActive": "1"
+      },
+      {
+        "ObjNo": "3003721",
+        "Code": "ERM",
+        "Name": "Files ERM",
+        "Description": "",
+        "Icon": "",
+        "SortOrder": "980.000",
+        "StatusNo": "17",
+        "IsActive": "1"
+      }
+    ],
+    "children": [
+      {
+        "ObjNo": "3000270",
+        "Code": "All Stakeholders",
+        "Name": "All Stakeholders",
+        "ParentObjNo": "3000269",
+        "ObjTypeNo": "2139",
+        "SortOrder": "10.000",
+        "StatusNo": "17",
+        "FormID": null
+      },
+      {
+        "ObjNo": "3004191",
+        "Code": "Stakeholder",
+        "Name": "ERM",
+        "ParentObjNo": "3003721",
+        "ObjTypeNo": "2139",
+        "SortOrder": "100.000",
+        "StatusNo": "17",
+        "FormID": "3002443"
+      }
+    ]
+  },
+  "error": null,
+  "timestamp": "2026-02-19T10:00:00Z"
+}
+```
+
+### How Angular Will Use This
+
+| Field | Angular Component | What It Does |
+|-------|------------------|-------------|
+| `modules` | `NavBarComponent` | Renders top-level nav tabs, sorted by `SortOrder`, filtered by `IsActive` |
+| `modules[].Icon` | `NavBarComponent` | Renders FontAwesome icon next to module name |
+| `children` | `NavBarComponent` | Renders dropdown menus, grouped by `ParentObjNo` |
+| `children[].FormID` | `NavBarComponent` | For ERM children: navigates to `/form/:FormID`. For regular children: `null` |
+
+## Legacy Table Format (for reference)
 
 Theo, ideally this returns **two result sets** in one call:
 
@@ -146,8 +223,6 @@ Theo, ideally this returns **two result sets** in one call:
 |---------|--------------|--------------|------------------------|-----------------|-----------|----------|
 | 3002338 | Strategy     | Strategy     | Strategy Management    | fa fa-cubes     | 100       | 1        |
 | 3000542 | Planning     | Planning     | Product Management     | fa-solid fa-list| 150       | 1        |
-| 3000269 | Stakeholders | Stakeholders | Stakeholder Management | fa-solid fa-list| 200       | 1        |
-| ...     | ...          | ...          | ...                    | ...             | ...       | ...      |
 | 3003721 | ERM          | Files ERM    |                        |                 | 980       | 1        |
 ```
 
@@ -156,12 +231,7 @@ Theo, ideally this returns **two result sets** in one call:
 | ObjNo   | Code              | Name               | ParentObjNo | SortOrder | ObjTypeNo | FormID  |
 |---------|-------------------|--------------------|-------------|-----------|-----------|---------|
 | 3000270 | All Stakeholders  | All Stakeholders   | 3000269     | 1         | 2139      | NULL    |
-| 3000536 | Entities          | Entities           | 3000269     | 2         | 2139      | NULL    |
-| ...     | ...               | ...                | ...         | ...       | ...       | ...     |
-| (ERM children — include the FormID!)                                                             |
 | ...     | Stakeholder       | Stakeholder        | 3003721     | 1         | (nav type)| 3002443 |
-| ...     | Product           | Product            | 3003721     | 2         | (nav type)| 3003751 |
-| ...     | Business Process  | Business Process   | 3003721     | 3         | (nav type)| 3004196 |
 ```
 
 The **FormID** column is only relevant for ERM children. For regular sub-items it will be `NULL`.

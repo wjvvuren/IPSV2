@@ -99,38 +99,147 @@ Returns detail records filtered by parent, with proper columns defined by the de
 
 ---
 
-## Expected Responses
+## Desired JSON Responses (REQUIRED)
 
-### ReadDetailTabs Response
+> **These are the contracts.** The .NET API must return these exact shapes so `FormViewComponent` and `DetailGridComponent` can render them generically.
 
-```
-| TabName          | DetailFormID | SortOrder | Icon |
-|------------------|-------------|-----------|------|
-| Addresses        | 3000650     | 1         | NULL |
-| Related Parties  | (FormID)    | 2         | NULL |
-| ShareRegister    | (FormID)    | 3         | NULL |
-| Documents        | (FormID)    | 4         | NULL |
-| Accounts         | (FormID)    | 5         | NULL |
-| Share Allocation | (FormID)    | 6         | NULL |
-| Equipment        | (FormID)    | 7         | NULL |
+### Endpoint A: ReadDetailTabs — Desired JSON Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "tabs": [
+      {
+        "tabName": "Addresses",
+        "detailFormId": 3000650,
+        "sortOrder": 1,
+        "icon": null
+      },
+      {
+        "tabName": "Related Parties",
+        "detailFormId": 3003752,
+        "sortOrder": 2,
+        "icon": null
+      },
+      {
+        "tabName": "ShareRegister",
+        "detailFormId": 3003754,
+        "sortOrder": 3,
+        "icon": null
+      },
+      {
+        "tabName": "Documents",
+        "detailFormId": 3001488,
+        "sortOrder": 4,
+        "icon": null
+      },
+      {
+        "tabName": "Accounts",
+        "detailFormId": 3000743,
+        "sortOrder": 5,
+        "icon": null
+      },
+      {
+        "tabName": "Share Allocation",
+        "detailFormId": null,
+        "sortOrder": 6,
+        "icon": null
+      },
+      {
+        "tabName": "Equipment",
+        "detailFormId": 3000908,
+        "sortOrder": 7,
+        "icon": null
+      }
+    ]
+  },
+  "error": null,
+  "timestamp": "2026-02-19T12:00:00Z"
+}
 ```
 
-### ReadDetailData Response
+### Endpoint B: ReadDetailData — Desired JSON Response
 
-**Result Set 1 — Data rows** (for Addresses tab, parent ObjNo=35):
-```
-| No         | Seq | Type     | Address                    | Street Name    | Suburb     | City/Town | Postal Code | Province     | Country      | Phone       | Fax | Email            | Last Updated     | Status  |
-|-----------|-----|----------|----------------------------|----------------|------------|-----------|-------------|--------------|--------------|-------------|-----|------------------|------------------|---------|
-| 10000006  | 0   | Postal   |                            | 401 Main Street| Waterkloof |           | 0181        |              | South Africa |             |     |                  | 07/09/16 00:00   | 02 - WIP|
-| 10000007  | 0   | Work     | 202, 2nd Floor, Clock Tower| ...            | V&W Water..| Cape Town | 8001        | Western Cape | South Africa |             |     | jannie@medi.coop | 07/09/16 17:16   | 02 - WIP|
+```json
+{
+  "success": true,
+  "data": {
+    "meta": {
+      "title": "Addresses",
+      "columns": [
+        { "key": "No", "label": "No", "type": "text", "visible": true },
+        { "key": "Seq", "label": "Seq", "type": "number", "visible": true },
+        { "key": "Type", "label": "Type", "type": "text", "visible": true },
+        { "key": "Address", "label": "Address", "type": "text", "visible": true },
+        { "key": "StreetName", "label": "Street Name", "type": "text", "visible": true },
+        { "key": "Suburb", "label": "Suburb", "type": "text", "visible": true },
+        { "key": "CityTown", "label": "City/Town", "type": "text", "visible": true },
+        { "key": "PostalCode", "label": "Postal Code", "type": "text", "visible": true },
+        { "key": "Province", "label": "Province", "type": "text", "visible": true },
+        { "key": "Country", "label": "Country", "type": "text", "visible": true },
+        { "key": "Phone", "label": "Phone", "type": "text", "visible": true },
+        { "key": "Email", "label": "Email", "type": "text", "visible": true },
+        { "key": "LastUpdated", "label": "Last Updated", "type": "date", "visible": true },
+        { "key": "Status", "label": "Status", "type": "text", "visible": true }
+      ],
+      "pagination": {
+        "totalRows": 3,
+        "page": 1,
+        "pageSize": 50
+      },
+      "actions": []
+    },
+    "rows": [
+      {
+        "No": "10000006",
+        "Seq": "0",
+        "Type": "Postal",
+        "Address": "",
+        "StreetName": "401 Main Street",
+        "Suburb": "Waterkloof",
+        "CityTown": "",
+        "PostalCode": "0181",
+        "Province": "",
+        "Country": "South Africa",
+        "Phone": "",
+        "Email": "",
+        "LastUpdated": "2016-09-07T00:00:00",
+        "Status": "02 - WIP"
+      },
+      {
+        "No": "10000007",
+        "Seq": "0",
+        "Type": "Work",
+        "Address": "202, 2nd Floor, Clock Tower",
+        "StreetName": "...",
+        "Suburb": "V&W Waterfront",
+        "CityTown": "Cape Town",
+        "PostalCode": "8001",
+        "Province": "Western Cape",
+        "Country": "South Africa",
+        "Phone": "",
+        "Email": "jannie@medi.coop",
+        "LastUpdated": "2016-09-07T17:16:00",
+        "Status": "02 - WIP"
+      }
+    ]
+  },
+  "error": null,
+  "timestamp": "2026-02-19T12:00:00Z"
+}
 ```
 
-**Result Set 2 — Metadata:**
-```
-| TotalRows |
-|-----------|
-| 3         |
-```
+### How Angular Will Use This
+
+| Field | Angular Component | What It Does |
+|-------|------------------|-------------|
+| `tabs` (Endpoint A) | `FormViewComponent` | Renders detail tab headers below the main grid |
+| `tabs[].detailFormId` | `FormViewComponent` | Used to call Endpoint B when a tab is clicked |
+| `meta.title` (Endpoint B) | `DetailGridComponent` | Displayed as the tab content heading |
+| `meta.columns` (Endpoint B) | `DetailGridComponent` | Renders table headers; `type` determines formatting pipe |
+| `meta.pagination` (Endpoint B) | `DetailGridComponent` | Shows pagination in the detail area |
+| `rows` (Endpoint B) | `DetailGridComponent` | Rendered as detail table rows |
 
 ---
 
