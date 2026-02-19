@@ -1,0 +1,88 @@
+.detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0;
+
+  h3 { margin: 0; font-size: 0.95rem; font-weight: 600; color: #1a1a1a; }
+}
+
+.grid-loading {
+  padding: 1.5rem;
+  text-align: center;
+  color: #888;
+  font-size: 0.875rem;
+}
+
+.grid-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  color: #999;
+  font-size: 0.85rem;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  background: #fafafa;
+  flex: 1;
+
+  .empty-icon { font-size: 1.5rem; }
+  p { margin: 0; font-style: italic; }
+
+  .dev-note {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.25rem;
+  }
+}
+
+/* ── Table (used once detail data flows in) ── */
+.table-wrapper { flex: 1; overflow: auto; border-radius: 8px; border: 1px solid #e5e7eb; }
+
+.grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+
+  th, td { padding: 0.45rem 0.75rem; text-align: left; white-space: nowrap; }
+
+  thead th {
+    background: #374151; color: #fff; font-weight: 600; font-size: 0.725rem;
+    text-transform: uppercase; letter-spacing: 0.03em; position: sticky; top: 0; z-index: 1;
+  }
+
+  tbody {
+    tr { border-bottom: 1px solid #f0f0f0; &:hover { background: #eef2ff; } }
+    td { color: #333; }
+    .empty-row { text-align: center; padding: 1.5rem; color: #999; font-style: italic; }
+  }
+}
+
+.pagination {
+  display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;
+}
+.pagination-info { font-size: 0.75rem; color: #e44d2a; font-weight: 500; }
+.pagination-controls { display: flex; align-items: center; gap: 0.5rem; }
+.page-indicator { font-size: 0.8rem; font-weight: 600; min-width: 2rem; text-align: center; }
+
+.btn {
+  padding: 0.3rem 0.75rem; border: none; border-radius: 6px;
+  background: #e44d2a; color: #fff; font-size: 0.75rem; font-weight: 500;
+  cursor: pointer; transition: background 0.2s;
+  &:hover:not(:disabled) { background: #c7391a; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}

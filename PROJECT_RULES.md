@@ -406,6 +406,7 @@ Before ANY code change, verify:
 | Top nav bar | ✅ | Modules with hover dropdowns, dev IDs visible |
 | ERM form viewer | ✅ For 15/20 forms | `GET /api/erm?formId=X` → calls `ReadNewERM` |
 | Data grid | ✅ | Generic, stateless, client-side pagination |
+| Detail grid | ✅ Component ready | Split-screen below main grid, empty until backend-004 delivers |
 | Dynamic routes | ✅ | `/form/:formId` → single `FormViewComponent` |
 | Dev Panel logging | ✅ | All API calls intercepted and logged |
 
@@ -417,6 +418,7 @@ Before ANY code change, verify:
 | **ReadNavigation FormID JOIN wrong** | [003](docs/backend-requests/003-application-navigation.md) | ERM children get wrong/duplicate FormIDs from the DB | ✅ Yes — hardcoded `FORM_ID_OVERRIDES` map in `NavigationService` |
 | **No server-side pagination** | [002](docs/backend-requests/002-readnewerm-fixes-pagination.md) | Stakeholder (10k rows), Account (10k rows) load entirely into memory | ✅ Yes — client-side slicing |
 | **Need generic form procedure** | [002](docs/backend-requests/002-readnewerm-fixes-pagination.md) | One procedure for all form types (not just ERM) | ✅ Partial — using `ReadNewERM` which works but is ERM-named |
+| **No detail/child records procedure** | [004](docs/backend-requests/004-detail-child-records.md) | Detail tabs (Addresses, Related Parties, etc.) can't load — no procedure exists | ❌ No — detail grid shows empty state |
 
 ### TODO Tags in Code
 
@@ -426,5 +428,6 @@ All pending backend-dependent work is marked with searchable tags:
 |-----|---------|-------|
 | `TODO(backend-002)` | Blocked on ReadNewERM fixes & pagination | `ErmController.cs`, `form-view.component.ts` |
 | `TODO(backend-003)` | Blocked on ReadNavigation FormID fix | `NavigationController.cs`, `navigation.service.ts` |
+| `TODO(backend-004)` | Blocked on detail tabs + detail data procedures | `detail-grid.component.ts`, `form-view.component.ts`, `form-view.component.html` |
 
 Search for `TODO(backend-` across the codebase to find all pending items.

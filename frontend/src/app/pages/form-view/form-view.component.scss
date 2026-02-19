@@ -5,6 +5,54 @@
   height: 100%;
 }
 
+/* ── Split container: top grid + bottom detail grid ── */
+.split-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 0;
+}
+
+.split-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.split-top {
+  flex: 0 1 50%;
+  min-height: 160px;
+  max-height: 50vh;
+  overflow: hidden;
+}
+
+.split-bottom {
+  flex: 1;
+  min-height: 160px;
+}
+
+.split-divider {
+  height: 4px;
+  background: #e5e7eb;
+  flex-shrink: 0;
+  position: relative;
+  cursor: row-resize;
+
+  &:hover {
+    background: #e44d2a;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+  }
+}
+
 .page-header {
   display: flex;
   align-items: center;

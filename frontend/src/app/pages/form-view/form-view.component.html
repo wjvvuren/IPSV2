@@ -31,13 +31,27 @@
     <div class="error-banner">{{ error() }}</div>
   }
 
-  <app-data-grid
-    [columns]="formData()?.columns ?? []"
-    [rows]="paginatedRows()"
-    [totalRows]="formData()?.totalRows ?? 0"
-    [currentPage]="currentPage()"
-    [pageSize]="pageSize()"
-    [loading]="loading()"
-    (pageChange)="onPageChange($event)"
-  />
+  <!-- Split view: top grid + bottom detail grid -->
+  <div class="split-container">
+    <div class="split-pane split-top">
+      <app-data-grid
+        [columns]="formData()?.columns ?? []"
+        [rows]="paginatedRows()"
+        [totalRows]="formData()?.totalRows ?? 0"
+        [currentPage]="currentPage()"
+        [pageSize]="pageSize()"
+        [loading]="loading()"
+        (pageChange)="onPageChange($event)"
+      />
+    </div>
+
+    <div class="split-divider"></div>
+
+    <div class="split-pane split-bottom">
+      <!-- TODO(backend-004): Populate with detail tabs + data once ReadDetailTabs/ReadDetailData exist -->
+      <app-detail-grid
+        [title]="'Details'"
+      />
+    </div>
+  </div>
 </div>

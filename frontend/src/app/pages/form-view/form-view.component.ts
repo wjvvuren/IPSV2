@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { ApiResponse } from '../../core/models/api-response.model';
 import { DataGridComponent } from '../../shared/components/data-grid/data-grid.component';
+import { DetailGridComponent } from '../../shared/components/detail-grid/detail-grid.component';
 
 /** Generic result shape returned by stored-procedure-backed endpoints */
 export interface FormResult {
@@ -23,7 +24,7 @@ export interface FormResult {
 @Component({
   selector: 'app-form-view',
   standalone: true,
-  imports: [DataGridComponent],
+  imports: [DataGridComponent, DetailGridComponent],
   templateUrl: './form-view.component.html',
   styleUrl: './form-view.component.scss'
 })
@@ -52,7 +53,11 @@ export class FormViewComponent implements OnInit {
   // TODO(backend-002): Switch to SERVER-SIDE pagination once Theo adds LIMIT/OFFSET + total count to ReadNewERM
   // Currently loading ALL rows into memory and slicing client-side — won't scale for 10k+ rows
   currentPage = signal<number>(1);
-  pageSize = signal<number>(50);
+  pageSize = signal<number>(20);
+
+  // TODO(backend-004): Add detail tab state (selectedRow, activeTab, detailColumns, detailRows)
+  // Will be populated once ReadDetailTabs + ReadDetailData procedures exist
+  // See docs/backend-requests/004-detail-child-records.md
 
   paginatedRows = computed(() => {
     const data = this.formData();
