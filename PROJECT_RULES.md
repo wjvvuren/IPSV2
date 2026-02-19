@@ -413,9 +413,10 @@ Before ANY code change, verify:
 
 | Issue | Backend Request | Impact | Workaround in place? |
 |-------|----------------|--------|---------------------|
-| **5 ERM forms crash (500)** | [002](docs/backend-requests/002-readnewerm-fixes-pagination.md) | Resource, Bank Transaction, Journals, Equipment, Stakeholder variant unusable | ❌ No — shows error badge |
+| **5 forms crash (500)** | [002](docs/backend-requests/002-readnewerm-fixes-pagination.md) | Resource, Bank Transaction, Journals, Equipment, Stakeholder variant unusable | ❌ No — shows error badge |
 | **ReadNavigation FormID JOIN wrong** | [003](docs/backend-requests/003-application-navigation.md) | ERM children get wrong/duplicate FormIDs from the DB | ✅ Yes — hardcoded `FORM_ID_OVERRIDES` map in `NavigationService` |
 | **No server-side pagination** | [002](docs/backend-requests/002-readnewerm-fixes-pagination.md) | Stakeholder (10k rows), Account (10k rows) load entirely into memory | ✅ Yes — client-side slicing |
+| **Need generic form procedure** | [002](docs/backend-requests/002-readnewerm-fixes-pagination.md) | One procedure for all form types (not just ERM) | ✅ Partial — using `ReadNewERM` which works but is ERM-named |
 
 ### TODO Tags in Code
 

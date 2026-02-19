@@ -1,8 +1,8 @@
-# 002 — ReadNewERM Fixes & Pagination Support
+# 002 — Generic Form Data Procedure (Fixes & Pagination)
 
 **Date:** 2026-02-18
 **Updated:** 2026-02-19
-**Status:** 📋 Requested — blocking 5 ERM forms
+**Status:** 📋 Requested — blocking 5 forms, no pagination
 **Priority:** 🔴 High
 **Assigned to:** Theo
 
@@ -10,11 +10,17 @@
 
 ## What I Need
 
-The `ReadNewERM` stored procedure has two issues that need to be addressed:
+We need **one stored procedure that works for ALL forms** — not just ERM forms. The frontend has a single generic `FormViewComponent` that renders any form by `FormID`. The procedure must accept any valid `FormID` and return its columns + rows.
+
+Currently we're using `ReadNewERM`, which works for most FormIDs but has the name "ERM" baked in. The goal is a **generic data procedure** (either rename it, wrap it, or create a new one) that:
+
+1. Works for **every FormID** (ERM and non-ERM)
+2. Handles NULL parameters without crashing
+3. Supports server-side pagination
 
 ### Issue 1: 500 Internal Server Error on certain FormIDs
 
-5 out of 20 ERM forms cause a **500 Internal Server Error** because `ReadNewERM` generates invalid dynamic SQL containing a bare `NULL` that causes a MySQL syntax error.
+5 out of 20 tested FormIDs cause a **500 Internal Server Error** because `ReadNewERM` generates invalid dynamic SQL containing a bare `NULL` that causes a MySQL syntax error.
 
 **Error message:** `You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'NULL' at line 1`
 
@@ -61,32 +67,44 @@ The procedure should support server-side pagination so only the needed page of d
 
 ## Proposed Endpoint
 
-`GET /api/erm?formId=3000825&page=1&pageSize=50`
+`GET /api/form-data?formId=3000825&page=1&pageSize=50`
 
-*(Same endpoint, just adding pagination query params)*
+*(Generic endpoint — works for any form, not just ERM)*
 
 ## Proposed Procedure Changes
 
-### Option A: Modify `ReadNewERM` to accept pagination params
+The ideal outcome is **one procedure** that serves any form. Options:
+
+### Option A (preferred): Create a generic `ReadFormData` procedure
+
+```
+CALL ReadFormData(@FormID, @ObjTypeList, @RequiredDate, @PageNumber, @PageSize);
+```
+
+This would replace `ReadNewERM` as the single data procedure for all form types. Internally it can use the same L4 logic that `ReadNewERM` uses.
+
+### Option B: Modify `ReadNewERM` to accept pagination + rename
+
+Keep the same code, add pagination params, and optionally rename to something generic:
 
 ```
 CALL ReadNewERM(@FormID, @ObjTypeList, @RequiredDate, @PageNumber, @PageSize);
 ```
 
-### Option B: Create a wrapper procedure
+### Option C: Wrap `ReadNewERM` in a paginated wrapper
 
 ```
-CALL ReadNewERMPaged(@FormID, @ObjTypeList, @RequiredDate, @PageNumber, @PageSize);
+CALL ReadFormDataPaged(@FormID, @ObjTypeList, @RequiredDate, @PageNumber, @PageSize);
 ```
 
-Either option works. The response should include the total row count so the frontend can render pagination controls.
+Any option works. The response must include the total row count so the frontend can render pagination controls.
 
 ## Expected Request
 
 ```
+CALL ReadFormData(3002443, '', NULL, 1, 50);
+-- OR if keeping existing name:
 CALL ReadNewERM(3002443, '', NULL, 1, 50);
--- OR
-CALL ReadNewERMPaged(3002443, '', NULL, 1, 50);
 ```
 
 ## Expected Response
@@ -111,11 +129,13 @@ Two result sets (or a total count column):
 
 ## Why
 
-1. **500 errors break the UI** — 5 of 20 ERM forms are completely unusable. Users clicking Resource, Bank Transaction, Journals, or Equipment in the sidebar get a blank error page.
+1. **500 errors break the UI** — 5 of 20 tested forms are completely unusable. Users clicking Resource, Bank Transaction, Journals, or Equipment get a blank error page.
 
-2. **Performance** — Loading 10,000+ rows into memory for every page view is inefficient. With pagination, the API only fetches 50 rows at a time, reducing load on the database and the API server.
+2. **One procedure for all forms** — The frontend uses a single `FormViewComponent` for every form type. It passes a `FormID` and expects columns + rows back. The backend procedure must be equally generic — it should handle any valid `FormID`, regardless of whether it's an ERM form or something else.
 
-3. **User experience** — The old IPS system showed "1-50 of 10986" pagination. We need the same in IPSV2.
+3. **Performance** — Loading 10,000+ rows into memory for every page view is inefficient. With pagination, the API only fetches 50 rows at a time, reducing load on the database and the API server.
+
+4. **User experience** — The old IPS system showed "1-50 of 10986" pagination. We need the same in IPSV2.
 
 ## Example Procedure (for reference)
 
@@ -187,7 +207,7 @@ We looked at three ERM-related stored procedures in the database to understand w
 
 The ERM forms in the `obj` table have data at two "levels" — L4 and L7. The procedures that use **L4** (`ReadNewERM`) return correct column/row structures. The procedures that use **L7** (`DynamicFieldValues`, `ReadERM`) return mismatched or broken results.
 
-**Theo — do NOT switch to DynamicFieldValues.** Stick with `ReadNewERM` (L4). It just needs the NULL fix for the 5 failing FormIDs.
+**Theo — do NOT switch to DynamicFieldValues.** Stick with `ReadNewERM` (L4) as the foundation. It just needs the NULL fix for the 5 failing FormIDs. Ideally rename or wrap it into a generic procedure (e.g. `ReadFormData`) that works for all form types, not just ERM.
 
 ### Current workarounds in Angular
 
@@ -214,4 +234,5 @@ The frontend has two dev-note sets tracking this:
 ### Priority actions for Theo
 
 1. **Fix the NULL dynamic SQL bug** in `ReadNewERM` for the 5 failing FormIDs — this is the #1 blocker
-2. **Add pagination** (LIMIT/OFFSET + total count) — nice to have now, essential before go-live
+2. **Make it generic** — the procedure should work for any `FormID`, not just ERM forms. If renaming `ReadNewERM` to `ReadFormData` is easier than creating a new one, that's fine.
+3. **Add pagination** (LIMIT/OFFSET + total count) — nice to have now, essential before go-live
