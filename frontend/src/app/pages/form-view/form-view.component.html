@@ -1,0 +1,43 @@
+<div class="form-view-page">
+  <div class="page-header">
+    <h2>{{ formData()?.procedureName ?? 'Form' }}</h2>
+    <div class="header-meta">
+      @if (formData(); as data) {
+        <span class="meta-badge">Form {{ data.formId }}</span>
+        <span class="meta-badge">{{ data.columns.length }} cols</span>
+        <span class="meta-badge">{{ data.totalRows }} rows</span>
+      }
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-sm" (click)="loadForm()" [disabled]="loading()">
+        ↻ Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Dev notes (remove when backend requests are resolved) -->
+  @if (isKnownFailing()) {
+    <span class="dev-note dev-note--block">
+      Backend Req #002 — FormID {{ formId() }} returns 500. ReadNewERM fix pending.
+    </span>
+  }
+  @if (isKnownEmpty()) {
+    <span class="dev-note dev-note--block">
+      Backend Req #002 — This form returns 0 rows. Data may not be populated or procedure may need a fix.
+    </span>
+  }
+
+  @if (error()) {
+    <div class="error-banner">{{ error() }}</div>
+  }
+
+  <app-data-grid
+    [columns]="formData()?.columns ?? []"
+    [rows]="paginatedRows()"
+    [totalRows]="formData()?.totalRows ?? 0"
+    [currentPage]="currentPage()"
+    [pageSize]="pageSize()"
+    [loading]="loading()"
+    (pageChange)="onPageChange($event)"
+  />
+</div>

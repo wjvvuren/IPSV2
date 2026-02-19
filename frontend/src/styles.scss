@@ -10,3 +10,35 @@ html, body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+/* ── Dev notes: visible indicators for pending backend work ── */
+.dev-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #ff4d4d;
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px dashed rgba(255, 77, 77, 0.4);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+
+  &::before {
+    content: '⚠';
+    font-size: 0.7rem;
+  }
+
+  &--block {
+    display: flex;
+    margin: 0.5rem 0;
+  }
+
+  &--dark {
+    color: #ff6b6b;
+    background: rgba(255, 0, 0, 0.12);
+    border-color: rgba(255, 107, 107, 0.35);
+  }
+}

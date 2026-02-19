@@ -19,10 +19,13 @@
 
       @if (ermExpanded()) {
         <ul class="nav-sub-list">
+          <li class="sidebar-dev-note">
+            <span class="dev-note dev-note--dark">Req #003 — Forms hardcoded, waiting on ReadNavigation</span>
+          </li>
           @for (form of ermForms(); track form.id) {
             <li>
               <a
-                [routerLink]="['/erm', form.id]"
+                [routerLink]="['/form', form.id]"
                 routerLinkActive="active"
                 class="nav-item sub-item"
               >

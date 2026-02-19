@@ -8,13 +8,18 @@ export const routes: Routes = [
       import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
   },
   {
-    path: 'erm/:formId',
+    path: 'form/:formId',
     loadComponent: () =>
-      import('./pages/erm/erm.component').then(m => m.ErmComponent),
+      import('./pages/form-view/form-view.component').then(m => m.FormViewComponent),
+  },
+  // Legacy alias — keeps existing /erm/... URLs working
+  {
+    path: 'erm/:formId',
+    redirectTo: 'form/:formId',
   },
   {
     path: 'erm',
-    redirectTo: 'erm/3002443',
+    redirectTo: 'form/3002443',
     pathMatch: 'full',
   },
 ];

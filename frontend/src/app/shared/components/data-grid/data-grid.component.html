@@ -1,0 +1,43 @@
+<div class="data-grid">
+  @if (loading()) {
+    <div class="grid-loading">Loading data…</div>
+  } @else {
+    <div class="table-wrapper">
+      <table class="grid-table">
+        <thead>
+          <tr>
+            @for (col of columns(); track col) {
+              <th>{{ col }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track $index) {
+            <tr>
+              @for (col of columns(); track col) {
+                <td>{{ row[col] }}</td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="columns().length" class="empty-row">
+                No data found
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalRows() > 0) {
+      <div class="pagination">
+        <span class="pagination-info">{{ showingRange() }}</span>
+        <div class="pagination-controls">
+          <button class="btn btn-sm" (click)="prevPage()" [disabled]="currentPage() <= 1">Prev</button>
+          <span class="page-indicator">{{ currentPage() }} / {{ totalPages() }}</span>
+          <button class="btn btn-sm" (click)="nextPage()" [disabled]="currentPage() >= totalPages()">Next</button>
+        </div>
+      </div>
+    }
+  }
+</div>

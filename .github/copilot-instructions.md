@@ -21,6 +21,45 @@ These files are the single source of truth for this project. If anything conflic
 - **Read `docs/api-contract.md` and `docs/backend-requests.md` before making changes.**
 - **Database:** MySQL at `192.168.36.35:3306`, database `Bank01`. Use the VS Code database plugin to browse procedures/tables. Angular NEVER talks to the database directly — all data flows through the .NET API calling stored procedures.
 
+## Dynamic Standalone Components — CRITICAL
+
+This project follows a **one-component-for-all** pattern. Never create a separate component per form or data type.
+
+### Architecture
+
+| Layer | Component | Purpose |
+|-------|-----------|---------|
+| **Shared** | `shared/components/data-grid/` | Generic, reusable data grid with pagination. Takes `columns`, `rows`, `totalRows`, `currentPage`, `pageSize` as inputs. Emits `pageChange`. No data fetching — purely presentational. |
+| **Page** | `pages/form-view/` | THE single dynamic page for all forms. Reads `formId` from route params, calls the API, and passes data to `DataGridComponent`. Works for ERM forms, future parent/child forms, and any stored-procedure-backed data view. |
+
+### Rules
+
+1. **Never create a per-form page component.** All forms route to `FormViewComponent` via `/form/:formId`.
+2. **Shared components are stateless.** They receive data via `input()` and emit events via `output()`. They never call `ApiService` directly.
+3. **Page components are thin orchestrators.** They read route params, call `ApiService`, and feed data to shared components. Minimal logic.
+4. **When adding new form types** (e.g. from navigation children), add them to the existing `FormViewComponent` — do not create a new page.
+5. **If a form needs a different layout**, use a config/flag on `FormViewComponent`, not a new component.
+6. **All new components must be standalone** (`standalone: true`). No NgModules.
+7. **Use Angular signals** (`signal()`, `computed()`, `input()`, `output()`) — not decorators like `@Input()` / `@Output()`.
+
+### Routing Pattern
+
+```typescript
+// All forms use the same component:
+{ path: 'form/:formId', loadComponent: () => import('./pages/form-view/form-view.component').then(m => m.FormViewComponent) }
+
+// Legacy aliases redirect to the generic route:
+{ path: 'erm/:formId', redirectTo: 'form/:formId' }
+```
+
+### Adding a New Shared Component
+
+When you need a new reusable UI piece (modal, card, filter bar, etc.):
+1. Create it in `shared/components/<name>/`.
+2. Make it **standalone**, **stateless**, and **generic**.
+3. Use `input()` / `output()` signals for all data flow.
+4. It must work for any data shape — no form-specific logic.
+
 ## Backend Requests
 
 When you need a new stored procedure, a change to an existing one, or an endpoint isn't returning what the UI needs:
