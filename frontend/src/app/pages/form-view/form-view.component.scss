@@ -21,10 +21,10 @@
 }
 
 .split-top {
-  flex: 0 1 50%;
+  flex: 0 1 auto;
   min-height: 160px;
   max-height: 50vh;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .split-bottom {

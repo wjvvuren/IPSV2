@@ -11,6 +11,7 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 .empty-row {
@@ -27,11 +28,13 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
+    overflow: hidden;
   }
 
   .p-datatable-wrapper {
     flex: 1;
     min-height: 0;
+    overflow: auto;
   }
 
   .p-datatable-thead > tr > th {
@@ -57,6 +60,7 @@
   }
 
   .p-paginator {
+    flex-shrink: 0;
     padding: 0.5rem 0;
     font-size: 0.8rem;
   }

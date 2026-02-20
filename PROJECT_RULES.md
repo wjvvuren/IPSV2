@@ -52,16 +52,6 @@ IPSV2 is an Angular frontend application that communicates with a .NET API backe
 - If data needs transformation, filtering, calculation, or validation beyond basic UI validation — **that is the SQL developer's job**.
 - If you find yourself writing logic to reshape data: **STOP**. Document what you need in `docs/backend-requests.md` and advise the backend/SQL developer to change their procedure.
 
-#### Formatting Exception
-While Angular must not **change the value** of data (business logic), it **is responsible** for display formatting based on metadata column types.
-
-| | Example | Allowed? |
-|---|---|---|
-| ✅ Correct | API sends `2026-02-19T00:00:00`, Angular uses `DatePipe` to show "Feb 19, 2026" | Yes — display formatting |
-| ✅ Correct | API sends `1500.5`, Angular uses `CurrencyPipe` to show "R 1,500.50" | Yes — display formatting |
-| ❌ Incorrect | Angular calculates "Days Overdue" by subtracting the date from today | No — this is a calculated value; must be a column from SQL |
-| ❌ Incorrect | Angular filters, groups, or aggregates rows to derive new data | No — this is data manipulation; must be done in the procedure |
-
 ### 2.2 — Dynamic, Standalone Components Only
 - Every component MUST be a **standalone Angular component**.
 - Components MUST be **generic and reusable**. Build once, work for all.
@@ -80,34 +70,6 @@ While Angular must not **change the value** of data (business logic), it **is re
   - What you currently receive
   - What you need instead
   - Why you need it
-
-### 2.6 — API Metadata Standard
-
-All endpoints feeding `FormViewComponent` must return a **standard wrapper structure** — not just a raw array. The backend must dictate the UI structure.
-
-```typescript
-interface ApiResponse<T> {
-  meta: {
-    title: string;              // Page title
-    columns: ColumnDef[];       // Column headers, visible flags, types (date/text/currency)
-    pagination: {
-      totalRows: number;
-      page: number;
-      pageSize: number;
-    };
-    actions: ActionDef[];       // Allowed buttons (e.g., "Create", "Delete")
-  };
-  data: T[];
-}
-```
-
-**Rules:**
-- The `meta.columns` array defines what columns to render and their display types (text, date, currency, etc.). Angular uses this to apply the correct `Pipe` (see Formatting Exception in 2.1).
-- The `meta.pagination` object tells the grid how many total rows exist and which page is currently loaded.
-- The `meta.actions` array tells the UI which CRUD buttons to show. The frontend never decides this — the backend controls it.
-- If an endpoint does not yet return this shape, **document a backend request** to migrate it.
-
----
 
 ### 2.5 — Environment Configuration
 - API base URL and all environment-specific config lives in `src/environments/` (Angular) and `.env` / `appsettings.json` (backend).
@@ -327,21 +289,11 @@ this.http.get<T>(url, { params });
 
 ## 9. Styling & UI
 
-- **UI Component Library: PrimeNG v17** — This is the chosen library. Do NOT use Angular Material or any other component library.
-  - Import PrimeNG modules as standalone imports in each component that needs them (e.g., `TableModule`, `ButtonModule`, `DialogModule`).
-  - Use the `lara-light-blue` theme (configured in `angular.json`).
-  - PrimeIcons (`primeicons`) is included for icon support.
-  - PrimeNG animations require `provideAnimationsAsync()` in `app.config.ts`.
-- **PrimeNG Usage Rules:**
-  1. Always import only the specific PrimeNG module needed (e.g., `TableModule` not the entire library).
-  2. Use `p-table` with `[lazy]="true"` for all data grids — this ensures pagination events are emitted to the parent without client-side data manipulation.
-  3. Keep PrimeNG component usage inside `shared/components/` wrappers (e.g., `DataGridComponent` wraps `p-table`). Page components should use our wrapper components, not PrimeNG directly.
-  4. Override PrimeNG styles via component SCSS using `:host ::ng-deep` sparingly. Prefer CSS variable overrides when possible.
-  5. Reference PrimeNG 17 documentation: https://v17.primeng.org/
+- Use a consistent UI framework (Angular Material or PrimeNG — decide once, stick with it).
 - All theme variables in a single SCSS file.
 - Responsive design required for all components.
 - Peacock workspace colors:
-  - **Full stack:** Corporate Blue (`#1a3a5c`)
+  - **Full stack:** Orange-Red (`#e44d2a`)
   - **Backend only:** Green (`#00a86b`)
   - **Frontend only:** Purple (`#8b5cf6`)
 
@@ -349,20 +301,9 @@ this.http.get<T>(url, { params });
 
 ## 10. Backend Developer Communication
 
-### JSON-First Requests
-
-When creating backend requests, **priority must be given to the Desired JSON Response**. Provide a literal JSON example of what the Angular component needs to receive. This is more helpful to the backend developer than a rough SQL query suggestion.
-
-**Every backend request MUST include:**
-1. A **literal JSON example** of the desired response (copy-pasteable, realistic data)
-2. A description of **what the UI will do** with each field
-3. Which **Angular component** will consume it (e.g., `DataGridComponent`, `DetailGridComponent`)
-
-The example SQL procedure section is **optional and secondary** — the JSON response is the contract.
-
 ### When You Need a New Procedure
 
-Create a numbered file in `docs/backend-requests/` using the template (`_template.md`):
+Create an entry in `docs/backend-requests.md`:
 
 ```markdown
 ## Request: [Description]
@@ -375,42 +316,30 @@ Create a numbered file in `docs/backend-requests/` using the template (`_templat
 ### Proposed Endpoint
 `GET /api/[controller]/[action]`
 
-### Desired JSON Response (REQUIRED)
-json
-{
-  "meta": {
-    "title": "Stakeholders",
-    "columns": [
-      { "key": "No", "label": "No", "type": "text", "visible": true },
-      { "key": "Name", "label": "Full Name", "type": "text", "visible": true },
-      { "key": "CreatedDate", "label": "Created", "type": "date", "visible": true }
-    ],
-    "pagination": { "totalRows": 10986, "page": 1, "pageSize": 50 },
-    "actions": ["create", "edit", "delete"]
-  },
-  "data": [
-    { "No": "2300036", "Name": "John Doe", "CreatedDate": "2026-01-15T00:00:00" }
-  ]
-}
+### Expected Request
+json { ... }
 
-### Why
-[Explain the UI/UX requirement driving this]
+### Expected Response
+json { ... }
 
-### Example Procedure (optional, for reference)
-sql
--- Optional: provide a rough SQL example so the backend dev understands the intent
+### Notes
+[Any additional context]
 ```
 
 ### When a Procedure Returns Wrong Data
 
-Do NOT fix it in Angular. Create a backend request showing:
+Do NOT fix it in Angular. Add to `docs/backend-requests.md`:
 
 ```markdown
-### Current JSON Response
-json { what it currently returns — paste actual response from Dev Panel }
+## Fix Request: [Procedure Name]
+**Date:** YYYY-MM-DD
+**Status:** 📋 Requested
 
-### Desired JSON Response
-json { what I need it to return — literal example }
+### Current Response
+json { what it currently returns }
+
+### What I Need Instead
+json { what I need it to return }
 
 ### Why
 [Explain the UI requirement]
@@ -476,8 +405,8 @@ Before ANY code change, verify:
 | Navigation from DB | ✅ Working (with workaround) | `GET /api/navigation` → calls `ReadNavigation` |
 | Top nav bar | ✅ | Modules with hover dropdowns, dev IDs visible |
 | ERM form viewer | ✅ For 15/20 forms | `GET /api/erm?formId=X` → calls `ReadNewERM` |
-| Data grid | ✅ | PrimeNG `p-table` with lazy pagination, sorting, row selection |
-| Detail grid | ✅ Component ready | PrimeNG `p-table`, empty until backend-004 delivers |
+| Data grid | ✅ | Generic, stateless, client-side pagination |
+| Detail grid | ✅ Component ready | Split-screen below main grid, empty until backend-004 delivers |
 | Dynamic routes | ✅ | `/form/:formId` → single `FormViewComponent` |
 | Dev Panel logging | ✅ | All API calls intercepted and logged |
 
