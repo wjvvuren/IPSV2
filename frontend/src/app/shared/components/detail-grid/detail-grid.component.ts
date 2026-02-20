@@ -1,11 +1,12 @@
 import { Component, computed, input, output } from '@angular/core';
+import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 
 /**
  * DetailGridComponent — Generic, stateless detail table.
  *
- * Displays a secondary data grid (e.g. child records, related data).
- * Follows the same pattern as DataGridComponent: receives data via
- * input(), emits events via output(). Never fetches data itself.
+ * Displays a secondary data grid (e.g. child records, related data)
+ * using PrimeNG's p-table. Follows the same pattern as DataGridComponent:
+ * receives data via input(), emits events via output(). Never fetches data itself.
  *
  * TODO(backend-004): This component is EMPTY until Theo creates ReadDetailTabs + ReadDetailData.
  * Once those procedures exist, the parent (FormViewComponent) will:
@@ -17,7 +18,7 @@ import { Component, computed, input, output } from '@angular/core';
 @Component({
   selector: 'app-detail-grid',
   standalone: true,
-  imports: [],
+  imports: [TableModule],
   templateUrl: './detail-grid.component.html',
   styleUrl: './detail-grid.component.scss'
 })
@@ -46,33 +47,19 @@ export class DetailGridComponent {
   /** Emits requested page number */
   pageChange = output<number>();
 
+  /** Compute the PrimeNG "first" offset from page + pageSize */
+  first = computed(() => (this.currentPage() - 1) * this.pageSize());
+
   totalPages = computed(() => {
     const total = this.totalRows();
     const size = this.pageSize();
     return size > 0 ? Math.ceil(total / size) : 0;
   });
 
-  showingRange = computed(() => {
-    const total = this.totalRows();
-    if (total === 0) return '';
-    const page = this.currentPage();
-    const size = this.pageSize();
-    const start = (page - 1) * size + 1;
-    const end = Math.min(page * size, total);
-    return `Showing ${start}–${end} of ${total}`;
-  });
-
-  prevPage(): void {
-    const page = this.currentPage();
-    if (page > 1) {
-      this.pageChange.emit(page - 1);
-    }
-  }
-
-  nextPage(): void {
-    const page = this.currentPage();
-    if (page < this.totalPages()) {
-      this.pageChange.emit(page + 1);
-    }
+  onPageChange(event: TableLazyLoadEvent): void {
+    const first = (event.first ?? 0);
+    const rows = (event.rows ?? this.pageSize());
+    const page = Math.floor(first / rows) + 1;
+    this.pageChange.emit(page);
   }
 }

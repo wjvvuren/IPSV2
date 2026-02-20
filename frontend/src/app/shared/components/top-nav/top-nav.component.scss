@@ -6,6 +6,22 @@
   position: relative;
 }
 
+.dashboard-link {
+  text-decoration: none;
+  margin-right: 0.25rem;
+
+  .module-label {
+    flex-direction: row;
+    gap: 0.35rem;
+    font-weight: 600;
+  }
+
+  &.active-route > .module-label {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+}
+
 .top-nav-loading {
   font-size: 0.75rem;
   opacity: 0.6;
@@ -117,7 +133,7 @@
   }
 
   &.active {
-    color: #e44d2a;
+    color: #93c5fd;
     font-weight: 600;
   }
 }
@@ -145,8 +161,8 @@
   font-weight: 700;
   padding: 0.1rem 0.3rem;
   border-radius: 3px;
-  background: rgba(228, 77, 42, 0.25);
-  color: #e44d2a;
+  background: rgba(37, 99, 235, 0.2);
+  color: #93c5fd;
   letter-spacing: 0.02em;
   font-family: 'Consolas', 'Courier New', monospace;
 }

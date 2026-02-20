@@ -75,6 +75,15 @@ npm start
 
 The app will start at **http://localhost:4200**.
 
+#### Key Frontend Dependencies
+
+| Package | Version | Purpose |
+|---------|---------|--------|
+| Angular | 18.x | Core framework |
+| PrimeNG | 17.x | UI component library (data tables, dialogs, menus, etc.) |
+| PrimeIcons | 7.x | Icon library for PrimeNG |
+| RxJS | 7.x | Reactive extensions |
+
 ---
 
 ## Running the Full Stack
@@ -194,4 +203,4 @@ The `.env` file in `backend-dotnet/IpsApi/` has the credentials.
 
 ---
 
-*Last updated: 2026-02-18*
+*Last updated: 2026-02-19*

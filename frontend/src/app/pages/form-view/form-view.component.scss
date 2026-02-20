@@ -40,7 +40,7 @@
   cursor: row-resize;
 
   &:hover {
-    background: #e44d2a;
+    background: #2563eb;
   }
 
   &::after {
@@ -90,7 +90,7 @@
   padding: 0.4rem 1rem;
   border: none;
   border-radius: 6px;
-  background: #e44d2a;
+  background: #1a3a5c;
   color: #fff;
   font-size: 0.8125rem;
   font-weight: 500;
@@ -98,7 +98,7 @@
   transition: background 0.2s;
 
   &:hover:not(:disabled) {
-    background: #c7391a;
+    background: #142d47;
   }
 
   &:disabled {

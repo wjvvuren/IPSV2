@@ -1,0 +1,275 @@
+.main-dashboard {
+  max-width: 1400px;
+}
+
+.page-title {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* ── KPI Row ── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.kpi-card {
+  ::ng-deep .p-card-body {
+    padding: 1rem 1.25rem;
+  }
+
+  ::ng-deep .p-card-content {
+    padding: 0;
+  }
+}
+
+.kpi-body {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.kpi-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.kpi-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.kpi-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.kpi-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-trend {
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+
+  &.trend-up {
+    color: #10b981;
+  }
+
+  &.trend-down {
+    color: #ef4444;
+  }
+}
+
+/* ── Middle Row ── */
+.middle-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  padding: 1rem 1.25rem 0;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+  }
+}
+
+/* ── Chart ── */
+.chart-container {
+  padding: 0.5rem 0 0;
+}
+
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 200px;
+  padding: 0 0.5rem;
+}
+
+.chart-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.bar-pair {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 180px;
+}
+
+.bar {
+  width: 22px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease;
+  position: relative;
+  min-height: 8px;
+}
+
+.bar-disbursed {
+  background: #3b82f6;
+}
+
+.bar-collected {
+  background: #10b981;
+}
+
+.bar-value {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.chart-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  padding-top: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.dot-disbursed {
+  background: #3b82f6;
+}
+
+.dot-collected {
+  background: #10b981;
+}
+
+/* ── Activity Feed ── */
+.activity-feed {
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f3f4f6;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  min-width: 60px;
+  flex-shrink: 0;
+  padding-top: 0.1rem;
+}
+
+.activity-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.activity-desc {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.activity-user {
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+
+/* ── Transactions Card ── */
+.transactions-card {
+  ::ng-deep .p-card-content {
+    padding: 0;
+  }
+
+  ::ng-deep .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: #f9fafb;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 0.6rem 0.75rem;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 0.55rem 0.75rem;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .middle-row {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
+}

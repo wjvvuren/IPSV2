@@ -14,6 +14,12 @@ These files are the single source of truth for this project. If anything conflic
 - **No data manipulation in Angular** — Angular only displays and sends data.
 - **Formatting is allowed** — Angular MAY use `DatePipe`, `CurrencyPipe`, etc. to format display values based on column `type`. It must NOT calculate, filter, or aggregate data.
 - **All components must be standalone and generic/reusable.**
+- **UI Library: PrimeNG v17** — This is the chosen component library. Do NOT use Angular Material or any other library. See `PROJECT_RULES.md` Section 9.
+- **PrimeNG Usage:**
+  - Import only the specific PrimeNG module needed (e.g., `TableModule`, `ButtonModule`, `DialogModule`).
+  - Use `p-table` with `[lazy]="true"` for data grids.
+  - Wrap PrimeNG components inside `shared/components/` wrappers. Page components should use our wrappers, not PrimeNG directly.
+  - Reference PrimeNG 17 docs: https://v17.primeng.org/
 - **All HTTP calls go through `ApiService`** — never use `HttpClient` directly.
 - **Every endpoint must be documented in `docs/api-contract.md` before use.**
 - **If the API returns wrong data, do NOT fix it in Angular** — document a request in `docs/backend-requests/`.
@@ -32,7 +38,7 @@ This project follows a **one-component-for-all** pattern. Never create a separat
 
 | Layer | Component | Purpose |
 |-------|-----------|---------|
-| **Shared** | `shared/components/data-grid/` | Generic, reusable data grid with pagination. Takes `columns`, `rows`, `totalRows`, `currentPage`, `pageSize` as inputs. Emits `pageChange`. No data fetching — purely presentational. |
+| **Shared** | `shared/components/data-grid/` | Generic data grid wrapping PrimeNG `p-table`. Lazy pagination, sorting, row selection. Takes `columns`, `rows`, `totalRows`, `currentPage`, `pageSize` as inputs. Emits `pageChange`, `rowSelect`. No data fetching — purely presentational. |
 | **Page** | `pages/form-view/` | THE single dynamic page for all forms. Reads `formId` from route params, calls the API, and passes data to `DataGridComponent`. Works for ERM forms, future parent/child forms, and any stored-procedure-backed data view. |
 
 ### Rules

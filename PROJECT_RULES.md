@@ -327,11 +327,21 @@ this.http.get<T>(url, { params });
 
 ## 9. Styling & UI
 
-- Use a consistent UI framework (Angular Material or PrimeNG — decide once, stick with it).
+- **UI Component Library: PrimeNG v17** — This is the chosen library. Do NOT use Angular Material or any other component library.
+  - Import PrimeNG modules as standalone imports in each component that needs them (e.g., `TableModule`, `ButtonModule`, `DialogModule`).
+  - Use the `lara-light-blue` theme (configured in `angular.json`).
+  - PrimeIcons (`primeicons`) is included for icon support.
+  - PrimeNG animations require `provideAnimationsAsync()` in `app.config.ts`.
+- **PrimeNG Usage Rules:**
+  1. Always import only the specific PrimeNG module needed (e.g., `TableModule` not the entire library).
+  2. Use `p-table` with `[lazy]="true"` for all data grids — this ensures pagination events are emitted to the parent without client-side data manipulation.
+  3. Keep PrimeNG component usage inside `shared/components/` wrappers (e.g., `DataGridComponent` wraps `p-table`). Page components should use our wrapper components, not PrimeNG directly.
+  4. Override PrimeNG styles via component SCSS using `:host ::ng-deep` sparingly. Prefer CSS variable overrides when possible.
+  5. Reference PrimeNG 17 documentation: https://v17.primeng.org/
 - All theme variables in a single SCSS file.
 - Responsive design required for all components.
 - Peacock workspace colors:
-  - **Full stack:** Orange-Red (`#e44d2a`)
+  - **Full stack:** Corporate Blue (`#1a3a5c`)
   - **Backend only:** Green (`#00a86b`)
   - **Frontend only:** Purple (`#8b5cf6`)
 
@@ -466,8 +476,8 @@ Before ANY code change, verify:
 | Navigation from DB | ✅ Working (with workaround) | `GET /api/navigation` → calls `ReadNavigation` |
 | Top nav bar | ✅ | Modules with hover dropdowns, dev IDs visible |
 | ERM form viewer | ✅ For 15/20 forms | `GET /api/erm?formId=X` → calls `ReadNewERM` |
-| Data grid | ✅ | Generic, stateless, client-side pagination |
-| Detail grid | ✅ Component ready | Split-screen below main grid, empty until backend-004 delivers |
+| Data grid | ✅ | PrimeNG `p-table` with lazy pagination, sorting, row selection |
+| Detail grid | ✅ Component ready | PrimeNG `p-table`, empty until backend-004 delivers |
 | Dynamic routes | ✅ | `/form/:formId` → single `FormViewComponent` |
 | Dev Panel logging | ✅ | All API calls intercepted and logged |
 

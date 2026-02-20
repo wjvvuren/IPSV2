@@ -1,0 +1,115 @@
+<div class="main-dashboard">
+  <h2 class="page-title">Dashboard</h2>
+  <span class="dev-note">Demo data only — no API integration yet</span>
+
+  <!-- ── KPI Cards ── -->
+  <div class="kpi-row">
+    @for (kpi of kpis(); track kpi.label) {
+      <p-card class="kpi-card" [style]="{ '--kpi-accent': kpi.colour }">
+        <div class="kpi-body">
+          <div class="kpi-icon" [style.background]="kpi.colour + '14'" [style.color]="kpi.colour">
+            <i [class]="kpi.icon"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">{{ kpi.label }}</span>
+            <span class="kpi-value">{{ kpi.value }}</span>
+          </div>
+          <span
+            class="kpi-trend"
+            [class.trend-up]="kpi.trend === 'up'"
+            [class.trend-down]="kpi.trend === 'down'"
+          >
+            <i [class]="kpi.trend === 'up' ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
+            {{ kpi.trendValue }}
+          </span>
+        </div>
+      </p-card>
+    }
+  </div>
+
+  <!-- ── Middle row: Chart + Activity ── -->
+  <div class="middle-row">
+    <!-- Simple CSS Bar Chart -->
+    <p-card class="chart-card">
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <h3>Monthly Overview (R millions)</h3>
+        </div>
+      </ng-template>
+      <div class="chart-container">
+        <div class="chart-bars">
+          @for (m of monthlyData(); track m.month) {
+            <div class="chart-group">
+              <div class="bar-pair">
+                <div class="bar bar-disbursed" [style.height]="barHeight(m.disbursed)" [title]="'Disbursed: R ' + m.disbursed + 'M'">
+                  <span class="bar-value">{{ m.disbursed }}</span>
+                </div>
+                <div class="bar bar-collected" [style.height]="barHeight(m.collected)" [title]="'Collected: R ' + m.collected + 'M'">
+                  <span class="bar-value">{{ m.collected }}</span>
+                </div>
+              </div>
+              <span class="chart-label">{{ m.month }}</span>
+            </div>
+          }
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot dot-disbursed"></span> Disbursed</span>
+          <span class="legend-item"><span class="legend-dot dot-collected"></span> Collected</span>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Activity Feed -->
+    <p-card class="activity-card">
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <h3>Recent Activity</h3>
+        </div>
+      </ng-template>
+      <div class="activity-feed">
+        @for (item of activities(); track $index) {
+          <div class="activity-item">
+            <span class="activity-time">{{ item.time }}</span>
+            <div class="activity-detail">
+              <span class="activity-desc">{{ item.description }}</span>
+              <span class="activity-user">{{ item.user }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </p-card>
+  </div>
+
+  <!-- ── Recent Transactions Table ── -->
+  <p-card class="transactions-card">
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <h3>Recent Transactions</h3>
+      </div>
+    </ng-template>
+    <p-table [value]="transactions()" [rows]="8" styleClass="p-datatable-sm p-datatable-striped">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Date</th>
+          <th>Client</th>
+          <th>Type</th>
+          <th style="text-align: right">Amount</th>
+          <th>Status</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-tx>
+        <tr>
+          <td>{{ tx.id }}</td>
+          <td>{{ tx.date | date:'dd MMM yyyy' }}</td>
+          <td>{{ tx.client }}</td>
+          <td>{{ tx.type }}</td>
+          <td style="text-align: right; font-variant-numeric: tabular-nums;">{{ tx.amount | currency:'ZAR':'R ':'.2-2' }}</td>
+          <td>
+            <p-tag [value]="tx.status" [severity]="getStatusSeverity(tx.status)" />
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>

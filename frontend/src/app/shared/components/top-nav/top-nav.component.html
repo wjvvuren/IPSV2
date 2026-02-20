@@ -1,4 +1,9 @@
 <nav class="top-nav" (mouseleave)="clearActiveModule()">
+  <!-- Dashboard link -->
+  <a class="top-nav-module dashboard-link" routerLink="/dashboard" routerLinkActive="active-route">
+    <span class="module-label"><i class="pi pi-th-large"></i> Dashboard</span>
+  </a>
+
   @if (!loaded()) {
     <span class="top-nav-loading">Loading…</span>
   }
